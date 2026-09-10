@@ -285,9 +285,12 @@
   "use strict";
 
   var KITS = {
-    1:{short:"Kit 1", name:"Kit 1 — Ahorro sin baterías", desc:"Paneles para bajar la factura durante el día. Sin respaldo nocturno: la opción más económica."},
-    2:{short:"Kit 2", name:"Kit 2 — Cobertura total", desc:"Cubre casi todo el consumo con baterías de respaldo. Algunas limitaciones en horas pico."},
-    3:{short:"Kit 3", name:"Kit 3 — Sin límites", desc:"Energía a toda hora, sin restricciones: de noche, en días nublados o con alto consumo."}
+    1:{short:"Kit 1", name:"Kit 1 — Ahorro sin baterías",
+       desc:"4 paneles solares de 730W + inversor de onda pura 2000W + controlador de carga MPPT 40A. Sin baterías: reduce tu factura durante el día, la opción más económica para empezar."},
+    2:{short:"Kit 2", name:"Kit 2 — Cobertura total",
+       desc:"8 paneles solares de 730W + inversor híbrido de 4kW + 2 baterías de litio 51.2V/100Ah. Cubre casi todo tu consumo, con autonomía limitada en horas pico o de noche."},
+    3:{short:"Kit 3", name:"Kit 3 — Sin límites",
+       desc:"10 paneles solares de 730W + inversor híbrido de 8kW + 2 baterías de litio 51.2V/200Ah. Energía a toda hora, sin restricciones: de noche, en días nublados o con alto consumo."}
   };
 
   var STATUS = {
@@ -300,12 +303,21 @@
 
   function initialLeads(){
     return [
-      {id:"marcela", name:"Marcela Restrepo", business:null, consumoTexto:"Factura mensual de $280.000", lugar:"Techo", recomendado:2, kit:2, valor:18500000, estado:"comprado"},
-      {id:"julian", name:"Julián Ospina", business:null, consumoTexto:"No conoce el consumo exacto — finca para 4 personas", lugar:"Patio", recomendado:1, kit:1, valor:9200000, estado:"pendiente"},
-      {id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", consumoTexto:"Factura mensual de $610.000", lugar:"Techo", recomendado:3, kit:3, valor:34000000, estado:"visita"},
-      {id:"andres", name:"Andrés Zapata", business:null, consumoTexto:"Factura mensual de $195.000", lugar:"Techo", recomendado:1, kit:null, valor:null, estado:"curiosidad"},
-      {id:"luisfernando", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", consumoTexto:"No conoce el consumo exacto — local con uso constante de neveras", lugar:"Patio", recomendado:2, kit:2, valor:22300000, estado:"recuperado"}
+      {id:"marcela", name:"Marcela Restrepo", business:null, consumoTexto:"Factura mensual de $280.000", billCOP:280000, lugar:"Techo", recomendado:2, kit:2, valor:18500000, estado:"comprado"},
+      {id:"julian", name:"Julián Ospina", business:null, consumoTexto:"No conoce el consumo exacto — finca para 4 personas", billCOP:null, lugar:"Patio", recomendado:1, kit:1, valor:9200000, estado:"pendiente"},
+      {id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", consumoTexto:"Factura mensual de $610.000", billCOP:610000, lugar:"Techo", recomendado:3, kit:3, valor:34000000, estado:"visita"},
+      {id:"andres", name:"Andrés Zapata", business:null, consumoTexto:"Factura mensual de $195.000", billCOP:195000, lugar:"Techo", recomendado:1, kit:null, valor:null, estado:"curiosidad"},
+      {id:"luisfernando", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", consumoTexto:"No conoce el consumo exacto — local con uso constante de neveras", billCOP:null, lugar:"Patio", recomendado:2, kit:2, valor:22300000, estado:"recuperado"}
     ];
+  }
+
+  function kwhRange(bill){
+    var low = Math.round((bill/950)/5)*5;
+    var high = Math.round((bill/700)/5)*5;
+    return low+"–"+high+" kWh/mes";
+  }
+  function consumoDisplay(l){
+    return l.billCOP ? (l.consumoTexto+" (≈ "+kwhRange(l.billCOP)+")") : l.consumoTexto;
   }
 
   var leads = initialLeads();
@@ -370,7 +382,7 @@
       '<div class="lead-grid">'+
         '<div class="lead-field"><div class="k">Paquete recomendado</div><div class="v">'+KITS[l.recomendado].short+'</div></div>'+
         '<div class="lead-field"><div class="k">Lugar instalación</div><div class="v">'+l.lugar+'</div></div>'+
-        '<div class="lead-field full"><div class="k">Gasto mensual informado</div><div class="v">'+l.consumoTexto+'</div></div>'+
+        '<div class="lead-field full"><div class="k">Gasto mensual informado</div><div class="v">'+consumoDisplay(l)+'</div></div>'+
         kitBlock+
         '<div class="lead-field"><div class="k">Valor del kit</div><div class="v">'+formatCOP(l.valor)+'</div></div>'+
       '</div>'+
@@ -513,7 +525,7 @@
 
     if(consumo==="known"){
       await addClientMessage(token, "Sí, mi factura llega por $195.000 al mes");
-      await addBotMessage(token, "Perfecto, ¡gracias! Con ese dato ya podemos avanzar 👍");
+      await addBotMessage(token, "Perfecto, ¡gracias! Con una factura de $195.000/mes tu consumo ronda los *"+kwhRange(195000)+"* 👍");
     } else {
       await addClientMessage(token, "La verdad no sé cuánto gasto en kWh 😅");
       await addBotMessage(token, "Sin problema. Cuéntame, ¿cuántas personas viven ahí y qué usan más (nevera, A/C, bomba de agua...)?");
@@ -529,10 +541,17 @@
     await addClientMessage(token, "En el "+lugar.toLowerCase());
 
     await addBotMessage(token,
-      "¡Listo! Con base en tu consumo, aquí tienes 3 opciones:\n\n"+
-      "1️⃣ *Kit 1 — Ahorro sin baterías*\nPaneles para bajar tu factura durante el día. Sin respaldo nocturno.\n💰 $8.900.000\n\n"+
-      "2️⃣ *Kit 2 — Cobertura total*\nCubre casi todo tu consumo con baterías de respaldo. Algunas limitaciones en horas pico.\n💰 $14.200.000\n\n"+
-      "3️⃣ *Kit 3 — Sin límites*\nEnergía a toda hora, sin restricciones: de noche, días nublados o alto consumo.\n💰 $21.800.000\n\n"+
+      "¡Listo! Aquí tienes 3 opciones — tú decides cuál se ajusta mejor a lo que buscas:\n\n"+
+      "1️⃣ *Kit 1 — Ahorro sin baterías* · $8.900.000\n"+
+      "• 4 paneles solares de 730W\n• Inversor de onda pura 2000W\n• Controlador de carga MPPT 40A\n"+
+      "Baja tu factura durante el día. Sin baterías: no cubre la noche.\n\n"+
+      "2️⃣ *Kit 2 — Cobertura total* · $14.200.000\n"+
+      "• 8 paneles solares de 730W\n• Inversor híbrido de 4kW\n• 2 baterías de litio 51.2V/100Ah\n"+
+      "Cubre casi todo tu consumo. Autonomía limitada en horas pico o de noche.\n\n"+
+      "3️⃣ *Kit 3 — Sin límites* · $21.800.000\n"+
+      "• 10 paneles solares de 730W\n• Inversor híbrido de 8kW\n• 2 baterías de litio 51.2V/200Ah\n"+
+      "Energía a toda hora, sin restricciones.\n\n"+
+      "El equipo exacto se ajusta a tu sitio, pero esta es la base 👍\n\n"+
       "¿Cuál te gustaría agendar para visita técnica? 😊"
     );
 
