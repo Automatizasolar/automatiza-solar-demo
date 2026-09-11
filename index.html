@@ -1,224 +1,266 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-CO">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Automatiza Solar — Panel de leads (Demo)</title>
-<meta name="description" content="Demo interactiva: panel de leads y simulador de conversación para Automatiza Solar.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<title>Automatiza Solar — Panel de leads</title>
+<meta name="description" content="Demo del panel: quién escribió anoche, qué necesitaba y en qué quedó. Datos de ejemplo.">
+<link rel="canonical" href="https://automatiza-solar-demo.vercel.app/">
+
+<link rel="icon" href="/brand/favicon.ico" sizes="any">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:site_name" content="Automatiza Solar">
+<meta property="og:url" content="https://automatiza-solar-demo.vercel.app/">
+<meta property="og:title" content="Automatiza Solar — Panel de leads">
+<meta property="og:description" content="Quién escribió anoche, qué necesitaba y en qué quedó. Demo con datos de ejemplo.">
+<meta property="og:image" content="https://automatiza-solar-demo.vercel.app/brand/og-automatiza-solar.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Automatiza Solar — panel de leads">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --blue:#2f6fed;
-    --blue-dark:#1d4ed8;
-    --blue-light:#eaf2ff;
-    --bg:#f4f8ff;
-    --card:#ffffff;
-    --border:#e1e9f7;
-    --text:#0f1a2b;
-    --muted:#5b6b85;
-    --green:#16a34a;
-    --amber:#d97706;
-    --purple:#7c3aed;
-    --gray:#64748b;
-    --radius:16px;
+    --navy:#062A50;
+    --navy-soft:#0C3D6E;
+    --green:#138363;
+    --green-bright:#17A07A;
+    --green-pale:#E7F3EE;
+    --paper:#FFFFFF;
+    --mist:#F2F4F6;
+    --muted:#5A6B7F;
+    --line:#DFE5EB;
+    --amber:#B4690E;
+    --amber-pale:#FBF0DD;
+    --violet:#5B3FA8;
+    --violet-pale:#EFEAFB;
+    --radius:14px;
+    --pad:clamp(1rem,4vw,1.75rem);
   }
+
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
+    margin:0;
+    background:var(--mist);
+    color:var(--navy);
+    font-family:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size:16px;
-    line-height:1.45;
+    line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
-  button{font-family:inherit;cursor:pointer;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 18px;}
+  img{max-width:100%;display:block;}
+  button{font:inherit;cursor:pointer;}
+  a{color:inherit;}
+  .wrap{width:100%;max-width:74rem;margin-inline:auto;padding-inline:var(--pad);}
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  :focus-visible{outline:3px solid var(--green-bright);outline-offset:2px;border-radius:6px;}
 
-  /* ---------- Header ---------- */
+  /* ---------------- Header ---------------- */
   header.app{
-    background:var(--card);
-    border-bottom:1px solid var(--border);
+    background:var(--paper);border-bottom:1px solid var(--line);
     position:sticky;top:0;z-index:30;
   }
   header.app .row{
     display:flex;align-items:center;justify-content:space-between;
-    padding:16px 18px;gap:12px;flex-wrap:wrap;
+    gap:1rem;padding-block:.875rem;flex-wrap:wrap;
   }
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-0.01em;}
-  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px var(--blue-light);}
-  .brand small{display:block;font-weight:600;font-size:12.5px;color:var(--muted);letter-spacing:0;}
-  .reset-btn{
-    background:var(--card);border:1.5px solid var(--border);color:var(--text);
-    font-weight:700;font-size:14.5px;padding:11px 18px;border-radius:100px;
-    display:flex;align-items:center;gap:6px;transition:.15s;
+  header.app img{width:11.5rem;height:2.75rem;object-fit:contain;object-position:left center;}
+  .tools{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+  .tool{
+    background:var(--paper);border:1.5px solid var(--line);color:var(--navy);
+    font-weight:600;font-size:.875rem;padding:.5rem .875rem;border-radius:999px;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
   }
-  .reset-btn:hover{border-color:var(--blue);color:var(--blue-dark);}
+  .tool:hover{border-color:var(--navy);}
+  .tool[aria-pressed="true"]{background:var(--green-pale);border-color:var(--green);color:var(--green);}
+  .speed{display:flex;align-items:center;gap:.375rem;}
+  .speed span{font-size:.8125rem;color:var(--muted);font-weight:500;}
 
-  /* ---------- Stats ---------- */
-  .stats{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
-    margin:22px 0;
+  /* ---------------- Intro ---------------- */
+  .intro{padding-top:1.75rem;}
+  .intro h1{
+    margin:0;font-size:clamp(1.5rem,3.4vw,2.125rem);
+    font-weight:700;letter-spacing:-0.03em;line-height:1.12;
   }
-  @media(max-width:700px){
-    .stats{grid-template-columns:1fr;}
-  }
-  .stat-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:20px;
-  }
-  .stat-card .label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px;}
-  .stat-card .value{font-size:30px;font-weight:800;letter-spacing:-0.02em;color:var(--blue-dark);}
+  .intro p{margin:.625rem 0 0;color:var(--muted);max-width:40rem;}
+
+  /* ---------------- Stats ---------------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-block:1.5rem;}
+  @media(max-width:60rem){.stats{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:26rem){.stats{grid-template-columns:1fr;}}
+  .stat-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.125rem;}
+  .stat-card .label{font-size:.8125rem;font-weight:600;color:var(--muted);margin-bottom:.375rem;}
+  .stat-card .value{font-size:1.75rem;font-weight:700;letter-spacing:-0.03em;line-height:1.1;}
+  .stat-card .hint{font-size:.75rem;color:var(--muted);margin-top:.25rem;}
+  .stat-card.accent .value{color:var(--green);}
   .stat-card.bump{animation:bump .5s ease;}
-  @keyframes bump{0%{transform:scale(1);}30%{transform:scale(1.06);}100%{transform:scale(1);}}
-  .ticket-input{
-    font-size:26px;font-weight:800;color:var(--blue-dark);
-    border:none;background:transparent;width:100%;padding:0;
-    border-bottom:2px dashed var(--border);letter-spacing:-0.02em;
+  @keyframes bump{0%{transform:scale(1);}30%{transform:scale(1.05);}100%{transform:scale(1);}}
+
+  /* ---------------- Section head ---------------- */
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin:1.75rem 0 .875rem;flex-wrap:wrap;}
+  .section-head h2{margin:0;font-size:1.0625rem;font-weight:700;letter-spacing:-0.02em;}
+  .section-head span{font-size:.875rem;color:var(--muted);}
+
+  /* ---------------- Layout ---------------- */
+  .layout{display:grid;grid-template-columns:1fr;gap:1.25rem;padding-bottom:2.5rem;align-items:start;}
+  @media(min-width:61.25rem){
+    .layout.with-chat{grid-template-columns:minmax(0,1fr) 25rem;}
   }
-  .ticket-input:focus{outline:none;border-bottom-color:var(--blue);}
-  .stat-card .hint{font-size:12px;color:var(--muted);margin-top:6px;}
-
-  /* ---------- Section title ---------- */
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 14px;}
-  .section-head h2{font-size:19px;font-weight:800;letter-spacing:-0.01em;}
-  .section-head span{font-size:13.5px;color:var(--muted);}
-
-  /* ---------- Layout ---------- */
-  .layout{display:grid;grid-template-columns:1fr;gap:20px;padding-bottom:60px;align-items:start;}
-  @media(min-width:980px){
-    .layout.with-chat{grid-template-columns:minmax(0,1fr) 400px;}
-  }
-
-  /* ---------- Lead cards ---------- */
-  .leads{display:grid;grid-template-columns:1fr;gap:14px;}
-  @media(min-width:700px){
+  .leads{display:grid;grid-template-columns:1fr;gap:.875rem;}
+  @media(min-width:44rem){
     .layout:not(.with-chat) .leads{grid-template-columns:1fr 1fr;}
   }
-  .lead-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:18px;transition:box-shadow .2s, transform .2s;
-  }
-  .lead-card.recovered-flash{animation:flash 1s ease;}
-  @keyframes flash{
-    0%{box-shadow:0 0 0 0 rgba(22,163,74,0);}
-    25%{box-shadow:0 0 0 6px rgba(22,163,74,.18);}
-    100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}
-  }
-  .lead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;}
-  .lead-id{display:flex;align-items:center;gap:10px;min-width:0;}
-  .avatar{
-    width:42px;height:42px;border-radius:50%;background:var(--blue-light);color:var(--blue-dark);
-    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex:none;
-  }
-  .lead-name{font-weight:800;font-size:16px;letter-spacing:-0.01em;}
-  .lead-biz{font-size:13px;color:var(--muted);font-weight:600;}
-  .badge{
-    font-size:12px;font-weight:700;padding:5px 11px;border-radius:100px;white-space:nowrap;flex:none;
-  }
-  .st-comprado{background:#dcfce7;color:#15803d;}
-  .st-pendiente{background:#fef3c7;color:#b45309;}
-  .st-visita{background:#dbeafe;color:#1d4ed8;}
-  .st-curiosidad{background:#f1f5f9;color:#475569;}
-  .st-recuperado{background:#ede9fe;color:#6d28d9;}
 
-  .lead-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:6px;}
-  .lead-field .k{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px;}
-  .lead-field .v{font-size:14.5px;font-weight:600;color:var(--text);}
+  /* ---------------- Lead cards ---------------- */
+  .lead-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:1.125rem;width:100%;text-align:left;color:inherit;
+    display:block;transition:border-color .18s ease,box-shadow .18s ease;
+  }
+  .lead-card:hover{border-color:var(--navy-soft);box-shadow:0 .375rem 1.25rem -.5rem rgba(6,42,80,.18);}
+  .lead-card[aria-current="true"]{border-color:var(--green);box-shadow:0 0 0 1px var(--green);}
+  .lead-card.flash{animation:flash 1.1s ease;}
+  @keyframes flash{
+    0%{box-shadow:0 0 0 0 rgba(19,131,99,0);}
+    25%{box-shadow:0 0 0 .375rem rgba(19,131,99,.2);}
+    100%{box-shadow:0 0 0 0 rgba(19,131,99,0);}
+  }
+  .lead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.625rem;margin-bottom:.875rem;}
+  .lead-id{display:flex;align-items:center;gap:.625rem;min-width:0;}
+  .avatar{
+    width:2.5rem;height:2.5rem;border-radius:50%;flex:none;
+    background:var(--mist);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.875rem;letter-spacing:-0.02em;
+  }
+  /* La tarjeta es un <button>, así que los hijos son <span>: hay que devolverles el flujo de bloque. */
+  .lead-who,.lead-name,.lead-biz,.lead-field,.lead-field .k,.lead-field .v,.kit-desc,.lead-foot{display:block;}
+  .lead-name{font-weight:700;font-size:1rem;letter-spacing:-0.02em;}
+  .lead-biz{font-size:.8125rem;color:var(--muted);font-weight:500;}
+  .badge{font-size:.75rem;font-weight:600;padding:.25rem .625rem;border-radius:999px;white-space:nowrap;flex:none;}
+  .st-comprado{background:var(--green-pale);color:var(--green);}
+  .st-pendiente{background:var(--amber-pale);color:var(--amber);}
+  .st-visita{background:#E6EFF8;color:var(--navy-soft);}
+  .st-curiosidad{background:var(--mist);color:var(--muted);}
+  .st-recuperado{background:var(--violet-pale);color:var(--violet);}
+
+  .lead-grid{display:grid;grid-template-columns:1fr 1fr;gap:.625rem .875rem;}
+  @media(max-width:26rem){.lead-grid{grid-template-columns:1fr;}}
+  .lead-field .k{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.125rem;}
+  .lead-field .v{font-size:.9375rem;font-weight:600;}
   .lead-field .v.muted{color:var(--muted);font-weight:500;}
   .lead-field.full{grid-column:1/-1;}
-  .kit-desc{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.35;}
-
-  .lead-actions{margin-top:14px;}
-  .sim-btn{
-    width:100%;background:var(--blue);color:#fff;font-weight:700;font-size:14.5px;
-    padding:12px 16px;border:none;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;
-    transition:.15s;
+  .kit-desc{font-size:.75rem;color:var(--muted);margin-top:.1875rem;line-height:1.4;font-weight:400;}
+  .lead-foot{
+    margin-top:.875rem;padding-top:.75rem;border-top:1px solid var(--line);
+    font-size:.8125rem;font-weight:600;color:var(--green);
   }
-  .sim-btn:hover{background:var(--blue-dark);}
-  .sim-btn.active{background:var(--blue-dark);}
+  .lead-foot.plain{color:var(--muted);font-weight:500;}
 
-  /* ---------- Chat panel ---------- */
+  /* ---------------- Chat ---------------- */
   .chat-panel{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    overflow:hidden;display:flex;flex-direction:column;height:640px;max-height:80vh;
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;height:40rem;max-height:80vh;
+    position:sticky;top:5.5rem;
   }
-  .chat-header{
-    background:#075e54;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;flex:none;
-  }
-  .chat-header .back{background:none;border:none;color:#fff;font-size:20px;padding:2px 6px;display:none;}
-  .chat-header .avatar{background:rgba(255,255,255,.18);color:#fff;}
-  .chat-header .ch-name{font-weight:700;font-size:15.5px;}
-  .chat-header .ch-sub{font-size:11.5px;color:#d5efe9;}
-  .chat-header .close{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;line-height:1;padding:4px 8px;}
-
-  .chat-body{
-    flex:1;overflow-y:auto;padding:16px 12px;
-    background:#e9e0d3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='6' cy='6' r='1' fill='%23ffffff' fill-opacity='0.25'/%3E%3C/svg%3E");
-    display:flex;flex-direction:column;gap:3px;
-  }
-  .bubble-row{display:flex;}
-  .bubble-row.bot{justify-content:flex-end;}
-  .bubble-row.client{justify-content:flex-start;}
-  .bubble{
-    max-width:82%;padding:9px 12px;font-size:14.5px;line-height:1.4;
-    box-shadow:0 1px 1px rgba(0,0,0,.08);margin:3px 0;white-space:pre-wrap;
-  }
-  .bubble.bot{background:#dcf8c6;border-radius:12px 12px 2px 12px;}
-  .bubble.client{background:#ffffff;border-radius:12px 12px 12px 2px;}
-  .bubble .time{display:block;text-align:right;font-size:10.5px;color:#6b7c6b;margin-top:4px;}
-  .typing-row{display:flex;justify-content:flex-end;}
-  .typing{
-    background:#dcf8c6;border-radius:12px 12px 2px 12px;padding:10px 14px;display:flex;gap:4px;margin:3px 0;
-  }
-  .typing span{width:6px;height:6px;border-radius:50%;background:#5b6b58;opacity:.5;animation:tb 1.1s infinite;}
-  .typing span:nth-child(2){animation-delay:.15s;}
-  .typing span:nth-child(3){animation-delay:.3s;}
-  @keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-3px);opacity:1;}}
-
-  .chat-choices{
-    padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;background:#f4f0e8;border-top:1px solid #e2dccb;flex:none;
-    min-height:0;
-  }
-  .choice-btn{
-    background:#fff;border:1.5px solid var(--blue);color:var(--blue-dark);font-weight:700;font-size:13.5px;
-    padding:10px 14px;border-radius:100px;transition:.15s;
-  }
-  .choice-btn:hover{background:var(--blue);color:#fff;}
-  .chat-fakeinput{
-    display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0f0f0;border-top:1px solid #e2dccb;flex:none;
-  }
-  .chat-fakeinput .box{flex:1;background:#fff;border-radius:100px;padding:10px 16px;color:#9aa5a0;font-size:14px;border:1px solid #e2e2e2;}
-  .chat-fakeinput .snd{width:38px;height:38px;border-radius:50%;background:#e2e2e2;display:flex;align-items:center;justify-content:center;flex:none;}
-
-  .result-card{
-    margin:12px;padding:14px;background:var(--blue-light);border:1.5px dashed var(--blue);border-radius:12px;flex:none;
-  }
-  .result-card h4{font-size:14px;font-weight:800;color:var(--blue-dark);margin:0 0 4px;}
-  .result-card p{font-size:13.5px;color:var(--text);margin:0 0 10px;}
-  .confirm-btn{
-    width:100%;background:var(--green);color:#fff;border:none;font-weight:800;font-size:14.5px;
-    padding:12px;border-radius:10px;
-  }
-  .confirm-btn:hover{background:#128a3e;}
-  .confirmed-msg{font-size:13.5px;font-weight:700;color:#15803d;display:flex;align-items:center;gap:6px;}
-
-  .chat-placeholder{
-    display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;
-    color:var(--muted);text-align:center;padding:30px;gap:8px;
-  }
-
-  footer.note{
-    text-align:center;color:var(--muted);font-size:12.5px;padding:30px 18px 50px;
-  }
-
-  /* ---------- Mobile: chat becomes full-screen overlay ---------- */
-  @media(max-width:979px){
+  @media(max-width:61.1875rem){
     .chat-panel{
-      position:fixed;inset:0;z-index:50;border-radius:0;height:100%;max-height:none;
+      position:fixed;inset:0;z-index:60;border-radius:0;height:100%;max-height:none;top:0;
       transform:translateX(100%);transition:transform .25s ease;
     }
     .chat-panel.open{transform:translateX(0);}
-    .chat-header .back{display:inline-block;}
+    .chat-header .back{display:inline-flex;}
+  }
+  body.locked{overflow:hidden;}
+  .chat-header{display:flex;align-items:center;gap:.625rem;padding:.875rem 1rem;border-bottom:1px solid var(--line);}
+  .chat-header .back{display:none;align-items:center;justify-content:center;background:none;border:none;color:var(--navy);font-size:1.25rem;padding:.25rem;line-height:1;}
+  .chat-header .close{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.125rem;padding:.25rem;line-height:1;}
+  .chat-header .close:hover{color:var(--navy);}
+  .ch-name{font-weight:700;font-size:.9375rem;letter-spacing:-0.01em;}
+  .ch-sub{font-size:.75rem;color:var(--muted);}
+  .chat-body{flex:1;overflow-y:auto;padding:1rem;background:var(--mist);display:flex;flex-direction:column;gap:.5rem;}
+  .bubble-row{display:flex;}
+  .bubble-row.client{justify-content:flex-start;}
+  .bubble-row.bot{justify-content:flex-end;}
+  .bubble{max-width:85%;padding:.5rem .75rem;border-radius:1rem;font-size:.9375rem;line-height:1.45;}
+  .bubble.client{background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:.3125rem;}
+  .bubble.bot{background:var(--green);color:#fff;border-bottom-right-radius:.3125rem;}
+  .bubble .time{display:block;margin-top:.1875rem;font-size:.6875rem;opacity:.65;}
+  .bubble b{font-weight:700;}
+  .typing-row{display:flex;justify-content:flex-end;}
+  .typing{display:flex;gap:.25rem;padding:.625rem .875rem;background:var(--paper);border:1px solid var(--line);border-radius:1rem;}
+  .typing span{width:.375rem;height:.375rem;border-radius:50%;background:#9FB0C2;animation:blink 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.18s;}
+  .typing span:nth-child(3){animation-delay:.36s;}
+  @keyframes blink{0%,60%,100%{opacity:.3;}30%{opacity:1;}}
+
+  .chat-choices{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--line);}
+  .chat-choices:empty{display:none;}
+  .choice-btn{
+    background:var(--paper);border:1.5px solid var(--green);color:var(--green);
+    font-weight:600;font-size:.875rem;padding:.5rem .875rem;border-radius:999px;
+  }
+  .choice-btn:hover{background:var(--green-pale);}
+  .choice-btn:disabled{opacity:.45;cursor:default;}
+  .back-btn{
+    background:none;border:1.5px solid var(--line);color:var(--muted);
+    font-weight:600;font-size:.875rem;padding:.5rem .875rem;border-radius:999px;margin-left:auto;
+  }
+  .back-btn:hover{border-color:var(--navy);color:var(--navy);}
+  /* Al cruzar el umbral de tamaño, el panel cambia de forma sin deslizarse. */
+  .chat-panel.no-anim{transition:none !important;}
+  .chat-fakeinput{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--line);}
+  .chat-fakeinput .box{flex:1;background:var(--mist);border-radius:999px;padding:.5rem .875rem;font-size:.875rem;color:var(--muted);}
+  .chat-fakeinput .snd{width:2rem;height:2rem;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.875rem;}
+
+  .result-card{background:var(--paper);border:1px solid var(--green);border-radius:var(--radius);padding:1rem;}
+  .result-card h4{margin:0 0 .375rem;font-size:.9375rem;font-weight:700;}
+  .result-card p{margin:0 0 .875rem;font-size:.875rem;color:var(--muted);}
+  .confirm-btn{width:100%;background:var(--green);color:#fff;border:none;font-weight:700;font-size:.9375rem;padding:.75rem;border-radius:10px;}
+  .confirm-btn:hover{background:var(--green-bright);}
+  .confirmed-msg{font-size:.875rem;font-weight:600;color:var(--green);text-align:center;}
+  .replay{display:flex;justify-content:center;padding-top:.25rem;}
+  .replay button{background:none;border:1.5px solid var(--line);color:var(--muted);font-weight:600;font-size:.8125rem;padding:.4375rem .875rem;border-radius:999px;}
+  .replay button:hover{border-color:var(--navy);color:var(--navy);}
+
+  /* ---------------- Cierre ---------------- */
+  .closing{background:var(--navy);color:#fff;}
+  .closing .wrap{padding-block:clamp(3rem,7vw,4.5rem);text-align:center;}
+  .closing h2{margin:0;font-size:clamp(1.5rem,3.6vw,2.25rem);font-weight:700;letter-spacing:-0.03em;line-height:1.12;}
+  .closing p{margin:.875rem auto 0;max-width:34rem;color:#A9BDD4;}
+  .closing .actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;margin-top:1.75rem;}
+  .closing .btn{
+    display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
+    font-weight:600;padding:.8125rem 1.5rem;border-radius:999px;text-decoration:none;
+    border:1px solid transparent;transition:background .18s ease,border-color .18s ease;
+  }
+  .closing .btn-solid{background:var(--green);color:#fff;}
+  .closing .btn-solid:hover{background:var(--green-bright);}
+  .closing .btn-ghost{border-color:rgba(255,255,255,.32);color:#fff;}
+  .closing .btn-ghost:hover{border-color:#fff;}
+
+  footer.note{padding-block:1.75rem;font-size:.8125rem;color:var(--muted);text-align:center;}
+
+  .noscript{
+    margin:1.5rem auto;max-width:36rem;background:var(--amber-pale);color:var(--amber);
+    border:1px solid #EBD3A8;border-radius:var(--radius);padding:1rem 1.25rem;font-size:.9375rem;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
   }
 </style>
 </head>
@@ -226,398 +268,770 @@
 
 <header class="app">
   <div class="wrap row">
-    <div class="brand"><span class="dot"></span><div>Automatiza Solar<small>Panel de leads — demo interactiva</small></div></div>
-    <button class="reset-btn" id="resetBtn">↺ Reiniciar demo</button>
+    <a href="https://automatiza-solar-landing.vercel.app" aria-label="Automatiza Solar, ir a la página principal">
+      <img src="/brand/logo-horizontal.svg" width="184" height="44" alt="Automatiza Solar">
+    </a>
+    <div class="tools">
+      <div class="speed" role="group" aria-label="Velocidad de la conversación">
+        <span>Velocidad</span>
+        <button class="tool" data-speed="1" aria-pressed="true">Normal</button>
+        <button class="tool" data-speed="0.35" aria-pressed="false">Rápida</button>
+        <button class="tool" data-speed="0" aria-pressed="false">Al instante</button>
+      </div>
+      <button class="tool" id="resetBtn">Reiniciar demo</button>
+    </div>
   </div>
 </header>
 
-<div class="wrap">
+<noscript>
+  <div class="noscript wrap">
+    Este panel necesita JavaScript para funcionar. Actívalo en tu navegador y recarga la página.
+  </div>
+</noscript>
 
+<div class="wrap intro">
+  <h1>Esto es lo que verías mañana al levantarte.</h1>
+  <p>Cinco personas escribieron anoche. El agente las atendió, averiguó lo que necesitaba
+     cada una y dejó la visita agendada. Toca cualquier tarjeta para leer la conversación.</p>
+</div>
+
+<div class="wrap">
   <div class="stats">
-    <div class="stat-card" id="statSold">
-      <div class="label">Equipos vendidos (mes)</div>
-      <div class="value" id="soldValue">0</div>
+    <div class="stat-card accent">
+      <div class="label">Respuesta media</div>
+      <div class="value" id="statReply">—</div>
+      <div class="hint">Desde que entra el mensaje</div>
+    </div>
+    <div class="stat-card" id="statRecovered">
+      <div class="label">Leads recuperados</div>
+      <div class="value" id="recoveredValue">0</div>
+      <div class="hint">Se habrían perdido sin respuesta</div>
     </div>
     <div class="stat-card" id="statRevenue">
-      <div class="label">Facturación (mes)</div>
+      <div class="label">Facturación cerrada</div>
       <div class="value" id="revenueValue">$0</div>
+      <div class="hint">Comprados y recuperados</div>
     </div>
-    <div class="stat-card">
-      <div class="label">Ticket medio (configurable)</div>
-      <input class="ticket-input" id="ticketInput" value="$0">
-      <div class="hint">Edítalo libremente, es tu referencia</div>
+    <div class="stat-card" id="statPipeline">
+      <div class="label">En visita agendada</div>
+      <div class="value" id="pipelineValue">$0</div>
+      <div class="hint">Pendiente de cerrar</div>
     </div>
   </div>
 
   <div class="section-head">
-    <h2>Personas que han preguntado</h2>
+    <h2>Personas que escribieron</h2>
     <span id="leadsCount"></span>
   </div>
 
   <div class="layout" id="layout">
     <div class="leads" id="leadsList"></div>
 
-    <div class="chat-panel" id="chatPanel" style="display:none;">
+    <section class="chat-panel" id="chatPanel" style="display:none;" aria-label="Conversación" tabindex="-1">
       <div class="chat-header">
-        <button class="back" id="chatBack">←</button>
-        <div class="avatar" id="chatAvatar">?</div>
+        <button class="back" id="chatBack" type="button" aria-label="Volver al panel">←</button>
+        <div class="avatar" id="chatAvatar" aria-hidden="true">?</div>
         <div>
           <div class="ch-name" id="chatName">Cliente</div>
-          <div class="ch-sub">Simulación de conversación · no es WhatsApp real</div>
+          <div class="ch-sub">Recreación visual · no es WhatsApp real</div>
         </div>
-        <button class="close" id="chatClose">✕</button>
+        <button class="close" id="chatClose" type="button" aria-label="Cerrar conversación">✕</button>
       </div>
-      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-relevant="additions"></div>
       <div class="chat-choices" id="chatChoices"></div>
-      <div class="chat-fakeinput">
+      <div class="chat-fakeinput" aria-hidden="true">
         <div class="box">Mensaje</div>
         <div class="snd">➤</div>
       </div>
-    </div>
+    </section>
   </div>
-
 </div>
 
-<footer class="note">Demo con datos de ejemplo · piloto de un solo negocio · la conversación es una simulación visual dentro de la web.</footer>
+<section class="closing">
+  <div class="wrap">
+    <h2>Tu WhatsApp puede verse así en siete días hábiles.</h2>
+    <p>Me pasas tu número y tu catálogo con precios, y cierro la instalación sobre la línea
+       que ya usas con tus clientes.</p>
+    <div class="actions">
+      <a class="btn btn-solid" href="https://calendly.com/piedrahita-automatizasolar/30min">Agendar llamada de 30 minutos</a>
+      <a class="btn btn-ghost" href="https://automatiza-solar-landing.vercel.app">Volver a la página</a>
+    </div>
+  </div>
+</section>
+
+<footer class="note">
+  <div class="wrap">Demo con datos ficticios. Ninguna persona ni negocio de este panel es real.</div>
+</footer>
 
 <script>
 (function(){
   "use strict";
 
+  /* ============ Datos ============ */
+
+  /* Rango de tarifa residencial usado para estimar consumo, en pesos por kWh. */
+  var TARIFA_COP_POR_KWH = { alta:950, baja:700 };
+
+  /* Precio único por kit: cualquier valor mostrado sale de aquí. */
   var KITS = {
-    1:{short:"Kit 1", name:"Kit 1 — Ahorro sin baterías",
-       desc:"4 paneles solares de 730W + inversor de onda pura 2000W + controlador de carga MPPT 40A. Sin baterías: reduce tu factura durante el día, la opción más económica para empezar."},
-    2:{short:"Kit 2", name:"Kit 2 — Cobertura total",
-       desc:"8 paneles solares de 730W + inversor híbrido de 4kW + 2 baterías de litio 51.2V/100Ah. Cubre casi todo tu consumo, con autonomía limitada en horas pico o de noche."},
-    3:{short:"Kit 3", name:"Kit 3 — Sin límites",
-       desc:"10 paneles solares de 730W + inversor híbrido de 8kW + 2 baterías de litio 51.2V/200Ah. Energía a toda hora, sin restricciones: de noche, en días nublados o con alto consumo."}
+    1:{ short:"Kit 1", name:"Kit 1 — Ahorro sin baterías", precio:8900000,
+        partes:["4 paneles solares de 730W","Inversor de onda pura 2000W","Controlador de carga MPPT 40A"],
+        desc:"Baja la factura durante el día. Sin baterías: no cubre la noche." },
+    2:{ short:"Kit 2", name:"Kit 2 — Cobertura total", precio:14200000,
+        partes:["8 paneles solares de 730W","Inversor híbrido de 4kW","2 baterías de litio 51.2V/100Ah"],
+        desc:"Cubre casi todo el consumo. Autonomía limitada en horas pico o de noche." },
+    3:{ short:"Kit 3", name:"Kit 3 — Sin límites", precio:21800000,
+        partes:["10 paneles solares de 730W","Inversor híbrido de 8kW","2 baterías de litio 51.2V/200Ah"],
+        desc:"Energía a toda hora: de noche, en días nublados o con consumo alto." }
   };
 
   var STATUS = {
-    comprado:{label:"Comprado", cls:"st-comprado"},
-    pendiente:{label:"Pendiente", cls:"st-pendiente"},
-    visita:{label:"Confirmó visita", cls:"st-visita"},
-    curiosidad:{label:"Solo curiosidad", cls:"st-curiosidad"},
-    recuperado:{label:"Recuperado", cls:"st-recuperado"}
+    comprado:   { label:"Comprado",        cls:"st-comprado"   },
+    pendiente:  { label:"Pendiente",       cls:"st-pendiente"  },
+    visita:     { label:"Confirmó visita", cls:"st-visita"     },
+    curiosidad: { label:"Solo curiosidad", cls:"st-curiosidad" },
+    recuperado: { label:"Recuperado",      cls:"st-recuperado" }
   };
 
   function initialLeads(){
     return [
-      {id:"marcela", name:"Marcela Restrepo", business:null, consumoTexto:"Factura mensual de $280.000", billCOP:280000, lugar:"Techo", recomendado:2, kit:2, valor:18500000, estado:"comprado"},
-      {id:"julian", name:"Julián Ospina", business:null, consumoTexto:"No conoce el consumo exacto — finca para 4 personas", billCOP:null, lugar:"Patio", recomendado:1, kit:1, valor:9200000, estado:"pendiente"},
-      {id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", consumoTexto:"Factura mensual de $610.000", billCOP:610000, lugar:"Techo", recomendado:3, kit:3, valor:34000000, estado:"visita"},
-      {id:"andres", name:"Andrés Zapata", business:null, consumoTexto:"Factura mensual de $195.000", billCOP:195000, lugar:"Techo", recomendado:1, kit:null, valor:null, estado:"curiosidad"},
-      {id:"luisfernando", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", consumoTexto:"No conoce el consumo exacto — local con uso constante de neveras", billCOP:null, lugar:"Patio", recomendado:2, kit:2, valor:22300000, estado:"recuperado"}
+      { id:"marcela", name:"Marcela Restrepo", business:null, hora:"9:12 p.m.", respuesta:6,
+        consumoTexto:"Factura mensual de $280.000", billCOP:280000, lugar:"Techo",
+        kit:2, estado:"comprado" },
+      { id:"julian", name:"Julián Ospina", business:null, hora:"10:03 p.m.", respuesta:9,
+        consumoTexto:"No conoce el consumo exacto — finca para 4 personas", billCOP:null, lugar:"Patio",
+        kit:1, estado:"pendiente" },
+      { id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", hora:"10:21 p.m.", respuesta:5,
+        consumoTexto:"Factura mensual de $610.000", billCOP:610000, lugar:"Techo",
+        kit:3, estado:"visita" },
+      { id:"andres", name:"Andrés Zapata", business:null, hora:"10:47 p.m.", respuesta:4,
+        consumoTexto:"Factura mensual de $195.000", billCOP:195000, lugar:"Techo",
+        kit:null, estado:"curiosidad" },
+      { id:"luisfernando", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", hora:"11:34 p.m.", respuesta:7,
+        consumoTexto:"No conoce el consumo exacto — local con uso constante de neveras", billCOP:null, lugar:"Patio",
+        kit:2, estado:"recuperado" }
     ];
   }
 
-  function kwhRange(bill){
-    var low = Math.round((bill/950)/5)*5;
-    var high = Math.round((bill/700)/5)*5;
-    return low+"–"+high+" kWh/mes";
-  }
-  function consumoDisplay(l){
-    return l.billCOP ? (l.consumoTexto+" (≈ "+kwhRange(l.billCOP)+")") : l.consumoTexto;
-  }
-
   var leads = initialLeads();
-  var ticketOverride = null;
   var activeLeadId = null;
-  var chatRunToken = 0;
+  var runToken = 0;
+  var speed = 1;
+  var transcripts = {};   /* id -> [{who,text,time}] de conversaciones ya vistas */
 
+  /* ============ Utilidades ============ */
+
+  function esc(s){
+    return String(s == null ? "" : s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  }
   function formatCOP(n){
-    if(n===null || n===undefined) return "—";
+    if(n === null || n === undefined) return "—";
     return "$" + Math.round(n).toLocaleString("es-CO");
   }
-  function parseCOP(str){
-    var digits = (str||"").replace(/[^0-9]/g,"");
-    return digits ? parseInt(digits,10) : 0;
-  }
   function initials(name){
-    return name.split(" ").filter(Boolean).slice(0,2).map(function(w){return w[0];}).join("").toUpperCase();
+    return name.split(" ").filter(Boolean).slice(0,2).map(function(w){ return w[0]; }).join("").toUpperCase();
   }
   function firstName(name){ return name.split(" ")[0]; }
-
-  function computeSold(){
-    return leads.filter(function(l){return l.estado==="comprado" || l.estado==="recuperado";});
+  function kwhRange(bill){
+    var low  = Math.round((bill / TARIFA_COP_POR_KWH.alta) / 5) * 5;
+    var high = Math.round((bill / TARIFA_COP_POR_KWH.baja) / 5) * 5;
+    return low + "–" + high + " kWh/mes";
   }
-  function computeAvgTicket(){
-    var sold = computeSold();
-    if(!sold.length) return 0;
-    var sum = sold.reduce(function(a,l){return a+l.valor;},0);
-    return Math.round(sum/sold.length);
+  function consumoDisplay(l){
+    return l.billCOP ? (l.consumoTexto + " (≈ " + kwhRange(l.billCOP) + ")") : l.consumoTexto;
+  }
+  function valorDe(l){ return l.kit ? KITS[l.kit].precio : null; }
+
+  /* La recomendación sale de la factura, no de un número escrito a mano. */
+  function recomendarKit(bill){
+    if(bill === null || bill === undefined) return null;
+    if(bill < 120000) return { kit:1, nota:"Con una factura tan baja el ahorro tarda en notarse. Vale la pena revisarlo en la visita." };
+    if(bill < 250000) return { kit:1, nota:null };
+    if(bill < 500000) return { kit:2, nota:null };
+    if(bill <= 2500000) return { kit:3, nota:null };
+    return { kit:3, nota:"Con ese consumo el sistema se sale de los kits estándar: toca estudio a la medida." };
+  }
+  function kitRecomendado(l){
+    var r = recomendarKit(l.billCOP);
+    if(r) return r.kit;
+    return l.kit || 1;   /* sin factura, nos quedamos con lo que ya eligió */
   }
 
-  function renderStats(bump){
-    var sold = computeSold();
-    var revenue = sold.reduce(function(a,l){return a+l.valor;},0);
-    document.getElementById("soldValue").textContent = sold.length;
-    document.getElementById("revenueValue").textContent = formatCOP(revenue);
-    if(ticketOverride===null){
-      document.getElementById("ticketInput").value = formatCOP(computeAvgTicket());
-    }
-    if(bump){
-      ["statSold","statRevenue"].forEach(function(id){
-        var el = document.getElementById(id);
+  /* ============ Estado guardado (sobrevive a un F5 accidental) ============ */
+
+  var STORE_KEY = "as-demo-v2";
+  function save(){
+    try{
+      sessionStorage.setItem(STORE_KEY, JSON.stringify({ leads:leads, transcripts:transcripts }));
+    }catch(e){ /* modo privado o almacenamiento bloqueado: seguimos sin guardar */ }
+  }
+  function restore(){
+    try{
+      var raw = sessionStorage.getItem(STORE_KEY);
+      if(!raw) return;
+      var data = JSON.parse(raw);
+      if(data && Array.isArray(data.leads) && data.leads.length){
+        leads = data.leads;
+        transcripts = data.transcripts || {};
+      }
+    }catch(e){ /* dato corrupto: arrancamos limpio */ }
+  }
+  function clearStore(){
+    try{ sessionStorage.removeItem(STORE_KEY); }catch(e){}
+  }
+
+  /* ============ Estadísticas ============ */
+
+  var lastStats = {};
+
+  function computeCerrados(){
+    return leads.filter(function(l){ return l.estado === "comprado" || l.estado === "recuperado"; });
+  }
+  function computePipeline(){
+    return leads.filter(function(l){ return l.estado === "visita"; });
+  }
+  function sumValor(list){
+    return list.reduce(function(a,l){ return a + (valorDe(l) || 0); }, 0);
+  }
+  function avgReply(){
+    var withReply = leads.filter(function(l){ return typeof l.respuesta === "number"; });
+    if(!withReply.length) return null;
+    var sum = withReply.reduce(function(a,l){ return a + l.respuesta; }, 0);
+    return Math.round(sum / withReply.length);
+  }
+
+  function renderStats(){
+    var recovered = leads.filter(function(l){ return l.estado === "recuperado"; }).length;
+    var revenue   = sumValor(computeCerrados());
+    var pipeline  = sumValor(computePipeline());
+    var reply     = avgReply();
+
+    var next = { recovered:recovered, revenue:revenue, pipeline:pipeline };
+
+    document.getElementById("statReply").textContent     = reply === null ? "—" : reply + " s";
+    document.getElementById("recoveredValue").textContent = recovered;
+    document.getElementById("revenueValue").textContent   = formatCOP(revenue);
+    document.getElementById("pipelineValue").textContent  = formatCOP(pipeline);
+
+    /* Sólo animamos lo que de verdad cambió. */
+    [["statRecovered","recovered"],["statRevenue","revenue"],["statPipeline","pipeline"]].forEach(function(pair){
+      if(lastStats[pair[1]] !== undefined && lastStats[pair[1]] !== next[pair[1]]){
+        var el = document.getElementById(pair[0]);
         el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
-      });
-    }
+      }
+    });
+    lastStats = next;
+  }
+
+  /* ============ Tarjetas ============ */
+
+  function field(label, value, extraClass, valueClass){
+    return '<span class="lead-field' + (extraClass ? " " + extraClass : "") + '">' +
+             '<span class="k">' + esc(label) + '</span>' +
+             '<span class="v' + (valueClass ? " " + valueClass : "") + '">' + esc(value) + '</span>' +
+           '</span>';
   }
 
   function leadCardHTML(l){
-    var st = STATUS[l.estado];
-    var kitBlock = l.kit ? (
-      '<div class="lead-field full"><div class="k">Kit elegido</div><div class="v">'+KITS[l.kit].name+'</div><div class="kit-desc">'+KITS[l.kit].desc+'</div></div>'
-    ) : '<div class="lead-field full"><div class="k">Kit elegido</div><div class="v muted">Aún no ha elegido</div></div>';
+    var st  = STATUS[l.estado];
+    var rec = kitRecomendado(l);
+
+    var kitBlock = l.kit
+      ? '<span class="lead-field full">' +
+          '<span class="k">Kit elegido</span>' +
+          '<span class="v">' + esc(KITS[l.kit].name) + '</span>' +
+          '<span class="kit-desc">' + esc(KITS[l.kit].partes.join(" · ")) + '</span>' +
+        '</span>'
+      : field("Kit elegido", "Aún no ha elegido", "full", "muted");
+
+    var foot = l.estado === "curiosidad"
+      ? '<span class="lead-foot">Se enfrió. Toca para recuperarlo.</span>'
+      : '<span class="lead-foot plain">Escribió a las ' + esc(l.hora) +
+        ' · respondido en ' + esc(l.respuesta) + ' s</span>';
 
     return (
-    '<div class="lead-card" data-id="'+l.id+'" id="card-'+l.id+'">'+
-      '<div class="lead-top">'+
-        '<div class="lead-id">'+
-          '<div class="avatar">'+initials(l.name)+'</div>'+
-          '<div><div class="lead-name">'+l.name+'</div>'+(l.business?'<div class="lead-biz">'+l.business+'</div>':'')+'</div>'+
-        '</div>'+
-        '<span class="badge '+st.cls+'">'+st.label+'</span>'+
-      '</div>'+
-      '<div class="lead-grid">'+
-        '<div class="lead-field"><div class="k">Paquete recomendado</div><div class="v">'+KITS[l.recomendado].short+'</div></div>'+
-        '<div class="lead-field"><div class="k">Lugar instalación</div><div class="v">'+l.lugar+'</div></div>'+
-        '<div class="lead-field full"><div class="k">Gasto mensual informado</div><div class="v">'+consumoDisplay(l)+'</div></div>'+
-        kitBlock+
-        '<div class="lead-field"><div class="k">Valor del kit</div><div class="v">'+formatCOP(l.valor)+'</div></div>'+
-      '</div>'+
-      (l.estado==="curiosidad" ? '<div class="lead-actions"><button class="sim-btn'+(activeLeadId===l.id?' active':'')+'" data-open="'+l.id+'">💬 Simular conversación (recuperar cliente)</button></div>' : '')+
-    '</div>');
+      '<button type="button" class="lead-card" data-id="' + esc(l.id) + '" id="card-' + esc(l.id) + '"' +
+        ' aria-current="' + (activeLeadId === l.id ? "true" : "false") + '">' +
+        '<span class="lead-top">' +
+          '<span class="lead-id">' +
+            '<span class="avatar" aria-hidden="true">' + esc(initials(l.name)) + '</span>' +
+            '<span class="lead-who">' +
+              '<span class="lead-name">' + esc(l.name) + '</span>' +
+              (l.business ? '<span class="lead-biz">' + esc(l.business) + '</span>' : '') +
+            '</span>' +
+          '</span>' +
+          '<span class="badge ' + st.cls + '">' + esc(st.label) + '</span>' +
+        '</span>' +
+        '<span class="lead-grid">' +
+          field("Paquete recomendado", KITS[rec].short) +
+          field("Lugar instalación", l.lugar) +
+          field("Gasto mensual informado", consumoDisplay(l), "full") +
+          kitBlock +
+          field("Valor del kit", formatCOP(valorDe(l))) +
+        '</span>' +
+        foot +
+      '</button>'
+    );
   }
 
   function renderLeads(){
-    document.getElementById("leadsList").innerHTML = leads.map(leadCardHTML).join("");
+    var list = document.getElementById("leadsList");
+    list.innerHTML = leads.map(leadCardHTML).join("");
     document.getElementById("leadsCount").textContent = leads.length + " en total";
-    Array.prototype.forEach.call(document.querySelectorAll("[data-open]"), function(btn){
-      btn.addEventListener("click", function(){ openChat(btn.getAttribute("data-open")); });
+    Array.prototype.forEach.call(list.querySelectorAll(".lead-card"), function(card){
+      card.addEventListener("click", function(){ openChat(card.getAttribute("data-id")); });
     });
   }
 
-  function renderAll(bump){
+  function renderAll(){
     renderLeads();
-    renderStats(bump);
+    renderStats();
+    save();
   }
 
-  /* ---------------- Chat engine ---------------- */
-  var chatPanel = document.getElementById("chatPanel");
-  var chatBody = document.getElementById("chatBody");
+  /* ============ Motor de conversación ============ */
+
+  var chatPanel   = document.getElementById("chatPanel");
+  var chatBody    = document.getElementById("chatBody");
   var chatChoices = document.getElementById("chatChoices");
-  var layoutEl = document.getElementById("layout");
-  var chatTimeMinutes = 41;
+  var layoutEl    = document.getElementById("layout");
+  var lastTrigger = null;
+  var clock = null;
 
-  function nextTime(){
-    chatTimeMinutes += 1;
-    var h = 10, m = chatTimeMinutes;
-    while(m>=60){m-=60;h+=1;}
-    return h+":"+(m<10?"0"+m:m)+" a.m.";
+  /* Estado del guion interactivo. Las respuestas son la única fuente de verdad:
+     el guion entero se reconstruye a partir de ellas, así que deshacer un paso
+     es borrar la última respuesta y volver a dibujar. */
+  var currentLead   = null;
+  var answers       = {};
+  var answeredOrder = [];
+  var rendered      = 0;
+  var confirmed     = false;
+
+  function resetScriptState(){
+    currentLead = null; answers = {}; answeredOrder = []; rendered = 0; confirmed = false;
   }
 
-  function sleep(ms){ return new Promise(function(res){ setTimeout(res, ms); }); }
-
-  function scrollBottom(){ chatBody.scrollTop = chatBody.scrollHeight; }
-
-  function escapeHTML(s){
-    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  /* Reloj real a partir de la hora en que escribió el lead: nunca produce "13:05 a.m." */
+  function startClock(hhmm){
+    var m = /^(\d{1,2}):(\d{2})\s*(a\.m\.|p\.m\.)$/i.exec(hhmm);
+    var h = m ? parseInt(m[1],10) % 12 : 22;
+    var min = m ? parseInt(m[2],10) : 47;
+    if(m && /p\.m\./i.test(m[3])) h += 12;
+    clock = new Date(2026, 8, 10, h, min, 0);
   }
-  function formatMsg(text){
-    var t = escapeHTML(text);
-    t = t.replace(/\*(.+?)\*/g, "<b>$1</b>");
-    t = t.replace(/\n/g, "<br>");
-    return t;
+  function nextTime(stepMinutes){
+    if(!clock) startClock("10:47 p.m.");
+    clock = new Date(clock.getTime() + (stepMinutes || 1) * 60000);
+    return clock.toLocaleTimeString("es-CO", { hour:"numeric", minute:"2-digit", hour12:true });
   }
 
-  function appendBubble(who, text){
+  function sleep(ms){
+    if(speed === 0) return Promise.resolve();
+    return new Promise(function(res){ setTimeout(res, ms * speed); });
+  }
+
+  /* Sólo bajamos solos si el usuario ya estaba abajo: si subió a releer, lo dejamos leer. */
+  function nearBottom(){
+    return (chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) < 80;
+  }
+  function maybeScroll(force){
+    if(force || nearBottom()) chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function bubbleHTML(who, text, time){
+    var t = esc(text).replace(/\*(.+?)\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
+    return '<div class="bubble ' + who + '">' + t +
+           '<span class="time">' + esc(time) + (who === "bot" ? " ✓✓" : "") + '</span></div>';
+  }
+
+  function appendBubble(who, text, time){
+    var stick = nearBottom();
     var row = document.createElement("div");
     row.className = "bubble-row " + who;
-    var b = document.createElement("div");
-    b.className = "bubble " + who;
-    b.innerHTML = formatMsg(text) + '<span class="time">'+nextTime()+(who==="bot"?" ✓✓":"")+'</span>';
-    row.appendChild(b);
+    row.innerHTML = bubbleHTML(who, text, time);
     chatBody.appendChild(row);
-    scrollBottom();
+    maybeScroll(stick);
   }
 
-  async function addBotMessage(token, text){
-    if(token!==chatRunToken) return;
+  function addClient(token, text){
+    if(token !== runToken) return Promise.resolve();
+    appendBubble("client", text, nextTime());
+    return sleep(350);
+  }
+
+  function addBot(token, text){
+    if(token !== runToken) return Promise.resolve();
+    var stick = nearBottom();
     var typingRow = document.createElement("div");
     typingRow.className = "typing-row";
     typingRow.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
     chatBody.appendChild(typingRow);
-    scrollBottom();
-    await sleep(750 + Math.random()*500);
-    if(token!==chatRunToken){ return; }
-    typingRow.remove();
-    appendBubble("bot", text);
-    await sleep(250);
-  }
-  async function addClientMessage(token, text){
-    if(token!==chatRunToken) return;
-    appendBubble("client", text);
-    await sleep(350);
+    maybeScroll(stick);
+
+    return sleep(850).then(function(){
+      /* Se retira siempre, aunque la conversación se haya cancelado: no deja nodos huérfanos. */
+      if(typingRow.parentNode) typingRow.remove();
+      if(token !== runToken) return;
+      appendBubble("bot", text, nextTime());
+      return sleep(250);
+    });
   }
 
-  function askChoice(token, options){
-    return new Promise(function(resolve){
-      if(token!==chatRunToken) return;
-      chatChoices.innerHTML = "";
-      options.forEach(function(opt){
+  function kitsMenu(lead){
+    var rec = recomendarKit(lead.billCOP);
+    var lineas = [1,2,3].map(function(k){
+      var kit = KITS[k];
+      return "*" + kit.name + "* · " + formatCOP(kit.precio) + "\n" +
+             kit.partes.map(function(p){ return "• " + p; }).join("\n") + "\n" + kit.desc;
+    }).join("\n\n");
+    return "Listo. Estas son las tres opciones, con tus precios de hoy:\n\n" + lineas +
+           "\n\nEl equipo exacto se ajusta a tu sitio, pero esta es la base." +
+           ((rec && rec.nota) ? "\n\n" + rec.nota : "") +
+           "\n\n¿Cuál te gustaría agendar para la visita técnica?";
+  }
+
+  /* Devuelve la conversación completa que corresponde a las respuestas dadas. */
+  function buildScript(lead, a){
+    var name = firstName(lead.name);
+    var acts = [
+      { t:"c", text:"Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar?" },
+      { t:"b", text:"¡Hola " + name + "! Con gusto. Para armarte una recomendación a la medida, " +
+                    "¿tienes a la mano tu recibo de luz?" },
+      { t:"ask", key:"consumo", options:[
+          { label:"Sí, mi factura es de " + formatCOP(lead.billCOP) + "/mes", value:"known" },
+          { label:"No sé exactamente cuánto gasto", value:"unknown" }
+        ] }
+    ];
+
+    if(a.consumo === "known"){
+      acts.push({ t:"c", text:"Sí, mi factura llega por " + formatCOP(lead.billCOP) + " al mes" });
+      acts.push({ t:"b", text:"Perfecto. Con esa factura tu consumo ronda los *" + kwhRange(lead.billCOP) + "*." });
+    } else if(a.consumo === "unknown"){
+      acts.push({ t:"c", text:"La verdad no sé cuánto gasto en kWh" });
+      acts.push({ t:"b", text:"Sin problema. ¿Cuántas personas viven ahí y qué usan más: nevera, aire, bomba de agua?" });
+      acts.push({ t:"ask", key:"detalle", options:[{ label:"Enviar detalle", value:"ok" }] });
+      if(a.detalle){
+        acts.push({ t:"c", text:"Somos 3 en la casa, usamos nevera, tele y a veces aire acondicionado" });
+        acts.push({ t:"b", text:"¡Gracias! Con eso seguimos." });
+      }
+    }
+
+    if(a.consumo === "known" || (a.consumo === "unknown" && a.detalle)){
+      acts.push({ t:"b", text:"Una pregunta más: ¿la instalación sería en el *techo* o en el *patio*?" });
+      acts.push({ t:"ask", key:"lugar", options:[
+          { label:"Techo", value:"Techo" }, { label:"Patio", value:"Patio" }
+        ] });
+    }
+
+    if(a.lugar){
+      acts.push({ t:"c", text:"En el " + a.lugar.toLowerCase() });
+      acts.push({ t:"b", text:kitsMenu(lead) });
+      acts.push({ t:"ask", key:"kit", options:[
+          { label:KITS[1].short, value:1 }, { label:KITS[2].short, value:2 }, { label:KITS[3].short, value:3 }
+        ] });
+    }
+
+    if(a.kit){
+      acts.push({ t:"c", text:"Me interesa el " + KITS[a.kit].short + ", ¿cómo seguimos?" });
+      acts.push({ t:"b", text:"¡Genial, " + name + "! Queda agendada tu visita técnica para validar la " +
+                              "instalación del *" + KITS[a.kit].short + "*. En las próximas horas te " +
+                              "contactamos para coordinar la fecha." });
+      acts.push({ t:"result", kit:a.kit, lugar:a.lugar });
+    }
+    return acts;
+  }
+
+  /* El guion convertido en mensajes con hora, para guardarlo y poder releerlo. */
+  function scriptToMessages(lead, a){
+    startClock(lead.hora);
+    var out = [];
+    buildScript(lead, a).forEach(function(A){
+      if(A.t === "c" || A.t === "b"){
+        out.push({ who:A.t === "c" ? "client" : "bot", text:A.text, time:nextTime() });
+      }
+    });
+    return out;
+  }
+
+  function renderChoices(token, act){
+    chatChoices.innerHTML = "";
+    if(act){
+      act.options.forEach(function(opt){
         var btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "choice-btn";
         btn.textContent = opt.label;
         btn.addEventListener("click", function(){
-          if(token!==chatRunToken) return;
+          if(btn.disabled || token !== runToken) return;
+          /* Desactivamos el grupo entero: el doble clic rápido no puede colarse. */
+          Array.prototype.forEach.call(chatChoices.querySelectorAll(".choice-btn"), function(b){ b.disabled = true; });
+          answers[act.key] = opt.value;
+          answeredOrder.push(act.key);
           chatChoices.innerHTML = "";
-          resolve(opt.value);
+          playFrom(token);
         });
         chatChoices.appendChild(btn);
       });
-    });
+    }
+    if(answeredOrder.length && !confirmed){
+      var back = document.createElement("button");
+      back.type = "button";
+      back.className = "back-btn";
+      back.textContent = "← Atrás";
+      back.addEventListener("click", stepBack);
+      chatChoices.appendChild(back);
+    }
+    if(act && chatChoices.firstChild) chatChoices.firstChild.focus();
   }
 
-  function showResultCard(token, kit, price, lugar){
-    if(token!==chatRunToken) return;
+  function playFrom(token){
+    var lead = currentLead;
+    if(!lead) return Promise.resolve();
+    var acts = buildScript(lead, answers);
+    var i = rendered;
+
+    function step(){
+      if(token !== runToken) return Promise.resolve();
+      if(i >= acts.length){ rendered = acts.length; renderChoices(token, null); return Promise.resolve(); }
+      var A = acts[i];
+
+      if(A.t === "ask"){
+        if(answers[A.key] === undefined){ rendered = i; renderChoices(token, A); return Promise.resolve(); }
+        i += 1; rendered = i; return step();
+      }
+      if(A.t === "result"){
+        showResultCard(token, lead, A.kit, A.lugar);
+        i += 1; rendered = i; renderChoices(token, null); return Promise.resolve();
+      }
+      return (A.t === "c" ? addClient(token, A.text) : addBot(token, A.text)).then(function(){
+        i += 1; rendered = i; return step();
+      });
+    }
+    return step();
+  }
+
+  /* Deshace la última elección y rebobina la conversación al instante. */
+  function stepBack(){
+    if(!answeredOrder.length || !currentLead) return;
+    delete answers[answeredOrder.pop()];
+    confirmed = false;
+    runToken += 1;
+    var token = runToken;
+    chatBody.innerHTML = "";
+    chatChoices.innerHTML = "";
+    startClock(currentLead.hora);
+    rendered = 0;
+    var prev = speed;
+    speed = 0;
+    playFrom(token).then(function(){ speed = prev; });
+  }
+
+  function showResultCard(token, lead, kit, lugar){
+    if(token !== runToken) return;
+    var precio = KITS[kit].precio;
     var div = document.createElement("div");
     div.className = "result-card";
-    div.id = "resultCard";
     div.innerHTML =
-      '<h4>🎯 Resultado de la conversación</h4>'+
-      '<p>Visita técnica agendada · <b>'+KITS[kit].name+'</b> · '+formatCOP(price)+' · instalación en '+lugar.toLowerCase()+'</p>'+
-      '<button class="confirm-btn" id="confirmBtn">✅ Confirmar y actualizar panel</button>';
+      '<h4>Resultado de la conversación</h4>' +
+      '<p>Visita técnica agendada · <b>' + esc(KITS[kit].name) + '</b> · ' + esc(formatCOP(precio)) +
+      ' · instalación en ' + esc(lugar.toLowerCase()) + '</p>' +
+      '<button class="confirm-btn" type="button">Confirmar y actualizar panel</button>';
     chatBody.appendChild(div);
-    scrollBottom();
-    document.getElementById("confirmBtn").addEventListener("click", function(){
-      confirmRecovery("andres", kit, price);
-      div.innerHTML = '<div class="confirmed-msg">✅ Cliente recuperado — panel actualizado</div>';
+    maybeScroll(true);
+    div.querySelector("button").addEventListener("click", function(){
+      confirmRecovery(lead.id, kit);
+      div.innerHTML = '<div class="confirmed-msg">Cliente recuperado — panel actualizado</div>';
     });
   }
 
-  function confirmRecovery(leadId, kit, price){
-    var l = leads.find(function(x){return x.id===leadId;});
+  function confirmRecovery(leadId, kit){
+    var l = leads.filter(function(x){ return x.id === leadId; })[0];
     if(!l) return;
+    /* Guardamos la conversación tal y como quedó, para poder releerla al reabrir. */
+    transcripts[leadId] = scriptToMessages(l, answers);
+    confirmed = true;
+    chatChoices.innerHTML = "";
     l.kit = kit;
-    l.valor = price;
     l.estado = "recuperado";
-    renderAll(true);
-    var card = document.getElementById("card-"+leadId);
+    renderAll();
+    var card = document.getElementById("card-" + leadId);
     if(card){
-      card.classList.add("recovered-flash");
-      setTimeout(function(){card.classList.remove("recovered-flash");}, 1000);
+      card.classList.add("flash");
+      setTimeout(function(){ card.classList.remove("flash"); }, 1100);
     }
   }
 
-  async function runAndresFlow(token){
-    var lead = leads.find(function(l){return l.id==="andres";});
-    var name = firstName(lead.name);
-
-    await addClientMessage(token, "Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar? 🙋");
-    await addBotMessage(token, "¡Hola "+name+"! 👋 Con gusto te ayudamos. Para armarte una recomendación a la medida, ¿tienes a la mano tu recibo de luz o sabes cuánto es tu consumo en kWh al mes?");
-
-    var consumo = await askChoice(token, [
-      {label:"📄 Sí, mi factura es de $195.000/mes", value:"known"},
-      {label:"🤷 No sé exactamente cuánto gasto", value:"unknown"}
-    ]);
-    if(token!==chatRunToken) return;
-
-    if(consumo==="known"){
-      await addClientMessage(token, "Sí, mi factura llega por $195.000 al mes");
-      await addBotMessage(token, "Perfecto, ¡gracias! Con una factura de $195.000/mes tu consumo ronda los *"+kwhRange(195000)+"* 👍");
+  /* Recuento estático para quien ya fue atendido: la tarjeta deja de estar muerta. */
+  function buildRecap(lead){
+    var kit = lead.kit ? KITS[lead.kit] : null;
+    var msgs = [
+      { who:"client", text:"Buenas, quiero información sobre paneles solares" +
+          (lead.business ? " para " + lead.business : "") + "." },
+      { who:"bot", text:"¡Hola " + firstName(lead.name) + "! Con gusto. ¿Sabes cuánto te llega de luz al mes?" },
+      { who:"client", text:lead.billCOP
+          ? "Me llega por " + formatCOP(lead.billCOP)
+          : lead.consumoTexto.replace("No conoce el consumo exacto — ", "No sé exactamente. Es ") },
+      { who:"bot", text:lead.billCOP
+          ? "Con esa factura tu consumo ronda los *" + kwhRange(lead.billCOP) + "*. ¿La instalación sería en techo o en patio?"
+          : "Sin problema, lo estimamos en la visita. ¿La instalación sería en techo o en patio?" },
+      { who:"client", text:"En el " + lead.lugar.toLowerCase() }
+    ];
+    if(kit){
+      msgs.push({ who:"bot", text:"Para tu caso recomiendo el *" + kit.name + "* · " + formatCOP(kit.precio) +
+                                  "\n" + kit.partes.map(function(p){ return "• " + p; }).join("\n") });
+      msgs.push({ who:"client", text:"Me sirve. Agendemos la visita." });
     } else {
-      await addClientMessage(token, "La verdad no sé cuánto gasto en kWh 😅");
-      await addBotMessage(token, "Sin problema. Cuéntame, ¿cuántas personas viven ahí y qué usan más (nevera, A/C, bomba de agua...)?");
-      await askChoice(token, [{label:"✍️ Enviar detalle", value:"ok"}]);
-      if(token!==chatRunToken) return;
-      await addClientMessage(token, "Somos 3 en la casa, usamos nevera, tele y a veces aire acondicionado");
-      await addBotMessage(token, "¡Gracias por el detalle! Ya con esto seguimos 🙌");
+      msgs.push({ who:"bot", text:"Te paso las opciones y agendamos una visita cuando quieras." });
     }
+    msgs.push({ who:"bot", text:lead.estado === "comprado"
+      ? "Confirmado. Gracias por la compra."
+      : "Perfecto, queda agendada la visita técnica." });
+    return msgs;
+  }
 
-    await addBotMessage(token, "Una pregunta más: ¿la instalación sería en el *techo* o en el *patio* de la propiedad?");
-    var lugar = await askChoice(token, [{label:"🏠 Techo", value:"Techo"},{label:"🌳 Patio", value:"Patio"}]);
-    if(token!==chatRunToken) return;
-    await addClientMessage(token, "En el "+lugar.toLowerCase());
-
-    await addBotMessage(token,
-      "¡Listo! Aquí tienes 3 opciones — tú decides cuál se ajusta mejor a lo que buscas:\n\n"+
-      "1️⃣ *Kit 1 — Ahorro sin baterías* · $8.900.000\n"+
-      "• 4 paneles solares de 730W\n• Inversor de onda pura 2000W\n• Controlador de carga MPPT 40A\n"+
-      "Baja tu factura durante el día. Sin baterías: no cubre la noche.\n\n"+
-      "2️⃣ *Kit 2 — Cobertura total* · $14.200.000\n"+
-      "• 8 paneles solares de 730W\n• Inversor híbrido de 4kW\n• 2 baterías de litio 51.2V/100Ah\n"+
-      "Cubre casi todo tu consumo. Autonomía limitada en horas pico o de noche.\n\n"+
-      "3️⃣ *Kit 3 — Sin límites* · $21.800.000\n"+
-      "• 10 paneles solares de 730W\n• Inversor híbrido de 8kW\n• 2 baterías de litio 51.2V/200Ah\n"+
-      "Energía a toda hora, sin restricciones.\n\n"+
-      "El equipo exacto se ajusta a tu sitio, pero esta es la base 👍\n\n"+
-      "¿Cuál te gustaría agendar para visita técnica? 😊"
-    );
-
-    var kitPrices = {1:8900000, 2:14200000, 3:21800000};
-    var kit = await askChoice(token, [{label:"Kit 1", value:1},{label:"Kit 2", value:2},{label:"Kit 3", value:3}]);
-    if(token!==chatRunToken) return;
-    await addClientMessage(token, "Me interesa el Kit "+kit+", ¿cómo seguimos?");
-    await addBotMessage(token, "¡Genial, "+name+"! 🎉 Ya quedó agendada tu visita técnica para validar la instalación del *Kit "+kit+"*. En las próximas horas te contactamos para coordinar la fecha. ¡Gracias por confiar en nosotros! ☀️");
-
-    showResultCard(token, kit, kitPrices[kit], lugar);
+  function renderStatic(msgs, canReplay, lead){
+    startClock(lead.hora);
+    chatBody.innerHTML = "";
+    msgs.forEach(function(m){
+      appendBubble(m.who, m.text, m.time || nextTime());
+    });
+    if(canReplay){
+      var wrap = document.createElement("div");
+      wrap.className = "replay";
+      wrap.innerHTML = '<button type="button">Ver la conversación otra vez</button>';
+      wrap.querySelector("button").addEventListener("click", function(){ replay(lead.id); });
+      chatBody.appendChild(wrap);
+    }
+    maybeScroll(true);
   }
 
   function openChat(leadId){
+    var lead = leads.filter(function(l){ return l.id === leadId; })[0];
+    if(!lead) return;
+
+    lastTrigger = document.getElementById("card-" + leadId);
     activeLeadId = leadId;
-    chatRunToken += 1;
-    var token = chatRunToken;
-    var lead = leads.find(function(l){return l.id===leadId;});
+    runToken += 1;
+    var token = runToken;
 
     chatBody.innerHTML = "";
     chatChoices.innerHTML = "";
     document.getElementById("chatAvatar").textContent = initials(lead.name);
     document.getElementById("chatName").textContent = lead.name;
-    chatTimeMinutes = 41;
+    startClock(lead.hora);
 
     chatPanel.style.display = "flex";
     void chatPanel.offsetWidth;
     chatPanel.classList.add("open");
     layoutEl.classList.add("with-chat");
+    if(window.matchMedia("(max-width: 61.1875rem)").matches) document.body.classList.add("locked");
 
-    renderLeads(); // update active button styling
+    renderLeads();
+    chatPanel.focus();
 
-    runAndresFlow(token);
+    resetScriptState();
+    currentLead = lead;
+
+    if(transcripts[leadId] && transcripts[leadId].length){
+      renderStatic(transcripts[leadId], lead.estado === "recuperado", lead);
+    } else if(lead.estado === "curiosidad"){
+      playFrom(token);
+    } else {
+      renderStatic(buildRecap(lead), false, lead);
+    }
+  }
+
+  function replay(leadId){
+    delete transcripts[leadId];
+    var lead = leads.filter(function(l){ return l.id === leadId; })[0];
+    if(!lead) return;
+    runToken += 1;
+    chatBody.innerHTML = "";
+    chatChoices.innerHTML = "";
+    startClock(lead.hora);
+    resetScriptState();
+    currentLead = lead;
+    if(lead.estado === "curiosidad") playFrom(runToken);
+    else renderStatic(buildRecap(lead), false, lead);
   }
 
   function closeChat(){
-    chatRunToken += 1;
+    runToken += 1;
     activeLeadId = null;
     chatPanel.classList.remove("open");
     layoutEl.classList.remove("with-chat");
+    document.body.classList.remove("locked");
     setTimeout(function(){ if(!activeLeadId) chatPanel.style.display = "none"; }, 250);
     renderLeads();
+    save();
+    if(lastTrigger){
+      var again = document.getElementById(lastTrigger.id);
+      if(again) again.focus();
+      lastTrigger = null;
+    }
   }
 
   document.getElementById("chatClose").addEventListener("click", closeChat);
   document.getElementById("chatBack").addEventListener("click", closeChat);
 
-  /* ---------------- Ticket medio input ---------------- */
-  var ticketInput = document.getElementById("ticketInput");
-  ticketInput.addEventListener("focus", function(){ this.select(); });
-  ticketInput.addEventListener("blur", function(){
-    var n = parseCOP(this.value);
-    ticketOverride = n;
-    this.value = formatCOP(n);
+  /* ============ Cambio de tamaño y rotación ============ */
+  /* Al cruzar el umbral, el chat pasa de panel lateral a pantalla completa. Sin esto,
+     rotar el dispositivo con el chat abierto lo hacía deslizarse de golpe y, peor,
+     dejaba el scroll del body bloqueado al volver a escritorio. */
+  var mqCompact = window.matchMedia("(max-width: 61.1875rem)");
+
+  function syncViewport(){
+    var estabaAbajo = nearBottom();
+
+    if(activeLeadId && mqCompact.matches) document.body.classList.add("locked");
+    else document.body.classList.remove("locked");
+
+    /* Silenciamos el deslizamiento durante el cambio de forma. */
+    chatPanel.classList.add("no-anim");
+    window.requestAnimationFrame(function(){
+      window.requestAnimationFrame(function(){
+        chatPanel.classList.remove("no-anim");
+        if(estabaAbajo) chatBody.scrollTop = chatBody.scrollHeight;
+      });
+    });
+  }
+
+  if(mqCompact.addEventListener) mqCompact.addEventListener("change", syncViewport);
+  else if(mqCompact.addListener) mqCompact.addListener(syncViewport);
+  window.addEventListener("orientationchange", function(){ setTimeout(syncViewport, 120); });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && activeLeadId) closeChat();
   });
 
-  /* ---------------- Reset ---------------- */
+  /* ============ Controles ============ */
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-speed]"), function(btn){
+    btn.addEventListener("click", function(){
+      speed = parseFloat(btn.getAttribute("data-speed"));
+      Array.prototype.forEach.call(document.querySelectorAll("[data-speed]"), function(b){
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+      });
+    });
+  });
+
   document.getElementById("resetBtn").addEventListener("click", function(){
+    var enCurso = activeLeadId && chatChoices.children.length > 0;
+    if(enCurso && !window.confirm("Hay una conversación a medias. ¿Reiniciar el demo de todas formas?")) return;
     leads = initialLeads();
-    ticketOverride = null;
+    transcripts = {};
+    lastStats = {};
+    clearStore();
+    runToken += 1;
     closeChat();
-    chatRunToken += 1;
-    renderAll(true);
+    renderAll();
   });
 
-  /* ---------------- Init ---------------- */
-  renderAll(false);
+  /* ============ Arranque ============ */
+
+  restore();
+  renderAll();
 })();
 </script>
 </body>

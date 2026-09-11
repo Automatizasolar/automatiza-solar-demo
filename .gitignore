@@ -1,0 +1,37 @@
+# Variables de entorno — nunca al repositorio
+.env
+.env.*
+!.env.example
+!.env.ejemplo
+
+# Credenciales y certificados
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+
+# Dependencias y build
+node_modules/
+dist/
+build/
+out/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Vercel
+.vercel/
