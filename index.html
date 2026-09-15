@@ -26,7 +26,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
   :root{
@@ -43,15 +43,32 @@
     --amber-pale:#FBF0DD;
     --violet:#5B3FA8;
     --violet-pale:#EFEAFB;
+    /* Fondo de página aparte del relleno interior: antes compartían token y eso
+       impedía separar las superficies de datos del suelo sobre el que descansan. */
+    --bg:#E9EEF4;
+    --deck:#062A50;
+    --deck-lift:#0B3A69;
+    --deck-muted:#9DB6D2;
+    --deck-line:rgba(255,255,255,.17);
+    --red:#C4443A;
+    --red-ink:#9B3229;
+    --red-pale:#FCEDEC;
+    --red-line:#F0CFCB;
+    /* El radio codifica la escala: sección, tarjeta, elemento, control. */
+    --r-sec:18px;
+    --r-card:12px;
+    --r-el:8px;
     --radius:14px;
+    --shadow-sec:0 1px 2px rgba(6,42,80,.05),0 14px 32px -20px rgba(6,42,80,.28);
     --pad:clamp(1rem,4vw,1.75rem);
   }
 
   *{box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
+  @media not (prefers-reduced-motion:reduce){ html{scroll-behavior:smooth;} }
   body{
     margin:0;
-    background:var(--mist);
+    background:var(--bg);
     color:var(--navy);
     font-family:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size:16px;
@@ -59,6 +76,10 @@
     -webkit-font-smoothing:antialiased;
   }
   img{max-width:100%;display:block;}
+  /* Todo lo que es un dato va en cifras tabulares: al recalcularse no baila. */
+  .value,.amount,.data-table td,.cal-day,.tip,.deck input,.lead-field .v,.end-label{
+    font-variant-numeric:tabular-nums;
+  }
   button{font:inherit;cursor:pointer;}
   a{color:inherit;}
   .wrap{width:100%;max-width:74rem;margin-inline:auto;padding-inline:var(--pad);}
@@ -77,7 +98,9 @@
     display:flex;align-items:center;justify-content:space-between;
     gap:1rem;padding-block:.875rem;flex-wrap:wrap;
   }
-  header.app img{width:11.5rem;height:2.75rem;object-fit:contain;object-position:left center;}
+  header.app img{width:10.5rem;height:2.5rem;object-fit:contain;object-position:left center;}
+  header.app .row{gap:1.5rem;}
+
   .tools{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
   .tool{
     background:var(--paper);border:1.5px solid var(--line);color:var(--navy);
@@ -86,47 +109,127 @@
   }
   .tool:hover{border-color:var(--navy);}
   .tool[aria-pressed="true"]{background:var(--green-pale);border-color:var(--green);color:var(--green);}
-  .speed{display:flex;align-items:center;gap:.375rem;}
-  .speed span{font-size:.8125rem;color:var(--muted);font-weight:500;}
+  .speed{display:flex;align-items:center;gap:.375rem;flex-wrap:wrap;}
+  .speed span{font-size:.8125rem;color:var(--muted);font-weight:600;}
 
-  /* ---------------- Intro ---------------- */
-  .intro{padding-top:1.75rem;}
-  .intro h1{
-    margin:0;font-size:clamp(1.5rem,3.4vw,2.125rem);
-    font-weight:700;letter-spacing:-0.03em;line-height:1.12;
+  /* ---------------- Secciones ---------------- */
+  main{display:block;padding-bottom:1rem;}
+  .sec-first{padding-top:clamp(1.75rem,4vw,2.75rem);}
+
+  /* Una sola cabecera para las cuatro secciones: el filete marca dónde empieza
+     cada una al bajar, y el control propio de la sección se apoya en él. */
+  .sec-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:.75rem 1.5rem;flex-wrap:wrap;
+    padding-bottom:.875rem;margin-bottom:1.125rem;
+    border-bottom:1px solid var(--line);
   }
-  .intro p{margin:.625rem 0 0;color:var(--muted);max-width:40rem;}
+  .sec-head .t{min-width:0;}
+  .sec-head h2{
+    margin:0;font-size:clamp(1.1875rem,2.4vw,1.4375rem);
+    font-weight:700;letter-spacing:-0.025em;line-height:1.15;
+  }
+  .sec-head .t p{margin:.3125rem 0 0;font-size:.875rem;color:var(--muted);max-width:46rem;}
+  .sec-head .range{font-size:.8125rem;color:var(--muted);font-weight:600;}
+
+  /* ---------------- Hero ---------------- */
+  .hero h1{
+    margin:0;font-size:clamp(1.75rem,4.2vw,2.625rem);
+    font-weight:800;letter-spacing:-0.035em;line-height:1.08;max-width:22ch;
+  }
+  .hero p{margin:.75rem 0 0;color:var(--muted);max-width:44rem;font-size:1rem;}
+
+  /* ---------------- Panel de control ---------------- */
+  /* Oscuro = lo manejas tú. Claro = el negocio te informa. */
+  .deck{
+    background:var(--deck);color:#fff;border-radius:var(--r-sec);
+    margin-top:clamp(1.25rem,3vw,1.75rem);
+    padding:1rem clamp(1rem,2.5vw,1.375rem);
+    box-shadow:var(--shadow-sec);
+    color-scheme:dark;
+  }
+  .deck-row{display:flex;align-items:center;gap:.5rem .75rem;flex-wrap:wrap;}
+  .deck-row + .deck-row{
+    margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--deck-line);
+  }
+  .deck-group{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+  .deck-lab{font-size:.8125rem;font-weight:600;color:var(--deck-muted);}
+  .deck-sep{width:1px;height:1.375rem;background:var(--deck-line);margin-inline:.25rem;}
+  .deck .fmt{font-size:.8125rem;font-weight:600;color:var(--deck-muted);}
+  .deck input{
+    font:inherit;font-size:.875rem;font-weight:600;color:#fff;
+    background:var(--deck-lift);border:1.5px solid var(--deck-line);
+    border-radius:999px;padding:.4375rem .875rem;width:7.5rem;
+  }
+  .deck input:hover{border-color:rgba(255,255,255,.4);}
+  .deck input:focus{border-color:#fff;}
+  .deck #inTicket{width:9.5rem;}
+  .deck input[type="date"]{width:auto;}
+
+  .chip{
+    background:transparent;border:1.5px solid var(--deck-line);color:#fff;
+    font-weight:600;font-size:.875rem;padding:.4375rem .875rem;border-radius:999px;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .chip:hover{border-color:rgba(255,255,255,.45);}
+  .chip[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--deck);}
+
+  /* El interruptor es el control con consecuencias: se separa y se vuelve rojo. */
+  .deck .kill{
+    margin-left:auto;background:transparent;border-color:var(--deck-line);color:#fff;
+  }
+  .deck .kill:hover{border-color:rgba(255,255,255,.5);}
+  .deck .kill[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff;}
+  .deck .kill[aria-pressed="true"] .dot{background:#fff;}
+  /* En estrecho los campos dejan de pelearse por el ancho: etiqueta arriba,
+     campo a lo ancho, y el interruptor ocupando su propia línea. */
+  @media(max-width:44rem){
+    .deck .kill{margin-left:0;width:100%;justify-content:center;}
+    .deck-group{flex-direction:column;align-items:stretch;gap:.375rem;width:100%;}
+    .deck-group input,.deck #inTicket{width:100%;}
+    .deck-row + .deck-row{gap:.875rem;}
+  }
 
   /* ---------------- Stats ---------------- */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-block:1.5rem;}
-  @media(max-width:60rem){.stats{grid-template-columns:repeat(2,1fr);}}
-  @media(max-width:26rem){.stats{grid-template-columns:1fr;}}
-  .stat-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.125rem;}
-  .stat-card .label{font-size:.8125rem;font-weight:600;color:var(--muted);margin-bottom:.375rem;}
-  .stat-card .value{font-size:1.75rem;font-weight:700;letter-spacing:-0.03em;line-height:1.1;}
-  .stat-card .hint{font-size:.75rem;color:var(--muted);margin-top:.25rem;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1.125rem;}
+  @media(max-width:62rem){.stats{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:30rem){.stats{grid-template-columns:1fr;}}
+  .stat-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-card);
+    padding:1.0625rem 1.125rem;
+  }
+  .stat-card .label{font-size:.8125rem;font-weight:600;color:var(--muted);margin-bottom:.4375rem;}
+  .stat-card .value{
+    font-size:clamp(1.5rem,2.5vw,1.8125rem);font-weight:800;
+    letter-spacing:-0.035em;line-height:1.05;
+  }
+  .stat-card .hint{font-size:.75rem;color:var(--muted);margin-top:.375rem;line-height:1.35;}
   .stat-card.accent .value{color:var(--green);}
   .stat-card.bump{animation:bump .5s ease;}
-  @keyframes bump{0%{transform:scale(1);}30%{transform:scale(1.05);}100%{transform:scale(1);}}
+  @keyframes bump{0%{transform:scale(1);}30%{transform:scale(1.04);}100%{transform:scale(1);}}
 
-  /* ---------------- Section head ---------------- */
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin:1.75rem 0 .875rem;flex-wrap:wrap;}
-  .section-head h2{margin:0;font-size:1.0625rem;font-weight:700;letter-spacing:-0.02em;}
-  .section-head span{font-size:.875rem;color:var(--muted);}
+  /* La pérdida es el asunto de la pantalla: ocupa el ancho entero y pesa más. */
+  .loss{
+    grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
+    gap:.75rem 2rem;flex-wrap:wrap;padding:1.25rem;
+  }
+  .loss .label{margin-bottom:.25rem;}
+  .loss .value{font-size:clamp(2rem,5vw,2.875rem);}
+  .loss .hint{margin-top:0;font-size:.9375rem;max-width:20rem;text-align:right;}
+  @media(max-width:46rem){ .loss .hint{text-align:left;max-width:none;} }
+  /* Un escalado del 4% en una franja de ancho completo se ve como un temblor. */
+  .loss.bump{animation:bump-wide .5s ease;}
+  @keyframes bump-wide{0%{transform:scale(1);}30%{transform:scale(1.008);}100%{transform:scale(1);}}
 
   /* ---------------- Layout ---------------- */
-  .layout{display:grid;grid-template-columns:1fr;gap:1.25rem;padding-bottom:2.5rem;align-items:start;}
-  @media(min-width:61.25rem){
-    .layout.with-chat{grid-template-columns:minmax(0,1fr) 25rem;}
-  }
   .leads{display:grid;grid-template-columns:1fr;gap:.875rem;}
-  @media(min-width:44rem){
-    .layout:not(.with-chat) .leads{grid-template-columns:1fr 1fr;}
-  }
+  @media(min-width:44rem){ .leads{grid-template-columns:1fr 1fr;} }
+  /* Con el cajon abierto queda menos ancho: la lista vuelve a una columna. */
+  @media(min-width:75rem){ body.chat-open .leads{grid-template-columns:1fr;} }
 
   /* ---------------- Lead cards ---------------- */
   .lead-card{
-    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-card);
     padding:1.125rem;width:100%;text-align:left;color:inherit;
     display:block;transition:border-color .18s ease,box-shadow .18s ease;
   }
@@ -171,62 +274,20 @@
   .lead-foot.plain{color:var(--muted);font-weight:500;}
 
   /* ---------------- Chat ---------------- */
-  .chat-panel{
-    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
-    overflow:hidden;display:flex;flex-direction:column;height:40rem;max-height:80vh;
-    position:sticky;top:5.5rem;
-  }
-  @media(max-width:61.1875rem){
-    .chat-panel{
-      position:fixed;inset:0;z-index:60;border-radius:0;height:100%;max-height:none;top:0;
-      transform:translateX(100%);transition:transform .25s ease;
-    }
-    .chat-panel.open{transform:translateX(0);}
-    .chat-header .back{display:inline-flex;}
-  }
   body.locked{overflow:hidden;}
-  .chat-header{display:flex;align-items:center;gap:.625rem;padding:.875rem 1rem;border-bottom:1px solid var(--line);}
-  .chat-header .back{display:none;align-items:center;justify-content:center;background:none;border:none;color:var(--navy);font-size:1.25rem;padding:.25rem;line-height:1;}
-  .chat-header .close{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.125rem;padding:.25rem;line-height:1;}
-  .chat-header .close:hover{color:var(--navy);}
-  .ch-name{font-weight:700;font-size:.9375rem;letter-spacing:-0.01em;}
-  .ch-sub{font-size:.75rem;color:var(--muted);}
-  .chat-body{flex:1;overflow-y:auto;padding:1rem;background:var(--mist);display:flex;flex-direction:column;gap:.5rem;}
-  .bubble-row{display:flex;}
-  .bubble-row.client{justify-content:flex-start;}
-  .bubble-row.bot{justify-content:flex-end;}
-  .bubble{max-width:85%;padding:.5rem .75rem;border-radius:1rem;font-size:.9375rem;line-height:1.45;}
-  .bubble.client{background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:.3125rem;}
-  .bubble.bot{background:var(--green);color:#fff;border-bottom-right-radius:.3125rem;}
-  .bubble .time{display:block;margin-top:.1875rem;font-size:.6875rem;opacity:.65;}
-  .bubble b{font-weight:700;}
-  .typing-row{display:flex;justify-content:flex-end;}
-  .typing{display:flex;gap:.25rem;padding:.625rem .875rem;background:var(--paper);border:1px solid var(--line);border-radius:1rem;}
-  .typing span{width:.375rem;height:.375rem;border-radius:50%;background:#9FB0C2;animation:blink 1.2s infinite;}
   .typing span:nth-child(2){animation-delay:.18s;}
   .typing span:nth-child(3){animation-delay:.36s;}
   @keyframes blink{0%,60%,100%{opacity:.3;}30%{opacity:1;}}
-
-  .chat-choices{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--line);}
-  .chat-choices:empty{display:none;}
-  .choice-btn{
-    background:var(--paper);border:1.5px solid var(--green);color:var(--green);
-    font-weight:600;font-size:.875rem;padding:.5rem .875rem;border-radius:999px;
-  }
-  .choice-btn:hover{background:var(--green-pale);}
-  .choice-btn:disabled{opacity:.45;cursor:default;}
   .back-btn{
     background:none;border:1.5px solid var(--line);color:var(--muted);
     font-weight:600;font-size:.875rem;padding:.5rem .875rem;border-radius:999px;margin-left:auto;
   }
   .back-btn:hover{border-color:var(--navy);color:var(--navy);}
-  /* Al cruzar el umbral de tamaño, el panel cambia de forma sin deslizarse. */
-  .chat-panel.no-anim{transition:none !important;}
   .chat-fakeinput{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--line);}
   .chat-fakeinput .box{flex:1;background:var(--mist);border-radius:999px;padding:.5rem .875rem;font-size:.875rem;color:var(--muted);}
   .chat-fakeinput .snd{width:2rem;height:2rem;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.875rem;}
 
-  .result-card{background:var(--paper);border:1px solid var(--green);border-radius:var(--radius);padding:1rem;}
+  .result-card{background:var(--paper);border:1px solid var(--green);border-radius:var(--r-card);padding:1rem;}
   .result-card h4{margin:0 0 .375rem;font-size:.9375rem;font-weight:700;}
   .result-card p{margin:0 0 .875rem;font-size:.875rem;color:var(--muted);}
   .confirm-btn{width:100%;background:var(--green);color:#fff;border:none;font-weight:700;font-size:.9375rem;padding:.75rem;border-radius:10px;}
@@ -254,6 +315,170 @@
 
   footer.note{padding-block:1.75rem;font-size:.8125rem;color:var(--muted);text-align:center;}
 
+  .kill{
+    display:inline-flex;align-items:center;gap:.5rem;
+    background:var(--paper);border:1.5px solid var(--line);color:var(--navy);
+    font-weight:700;font-size:.875rem;padding:.5rem 1rem;border-radius:999px;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .kill .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--green);flex:none;}
+  .kill:hover{border-color:var(--navy);}
+  .kill[aria-pressed="true"]{background:#FCEDEC;border-color:#C4443A;color:#9B3229;}
+  .kill[aria-pressed="true"] .dot{background:#C4443A;}
+
+  /* Todo el panel avisa de que está mirando el escenario sin agente. */
+  body.sin-agente .stat-card .value{color:#9B3229;}
+  body.sin-agente .stat-card.accent .value{color:#9B3229;}
+  .stat-card.alarm .value{color:#C4443A;}
+  .stat-card.alarm{background:#FCEDEC;border-color:#F0CFCB;}
+  .stat-card.alarm .label,.stat-card.alarm .hint{color:#9B3229;}
+  body.sin-agente .stat-card.alarm{background:var(--paper);border-color:var(--line);}
+  body.sin-agente .stat-card.alarm .label,body.sin-agente .stat-card.alarm .hint{color:var(--muted);}
+
+  .legend{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:.25rem;}
+  .legend .key{display:inline-flex;align-items:center;gap:.4375rem;font-size:.8125rem;color:var(--muted);font-weight:600;}
+  .legend .sw{width:1rem;height:2px;border-radius:1px;flex:none;}
+  .legend .sw.on{background:#0C5FA8;}
+  .legend .sw.off{background:#94A6B8;}
+  body.sin-agente .legend .sw.on{background:#94A6B8;}
+
+  .ghost-line{fill:none;stroke:#94A6B8;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;}
+  .gap-fill{fill:#C4443A;opacity:.11;}
+  .gap-label{font-size:11px;font-weight:700;font-family:inherit;fill:#9B3229;}
+
+  /* ---------------- Gráfica ---------------- */
+  .chart-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sec);
+    padding:clamp(1.125rem,2.5vw,1.5rem);position:relative;box-shadow:var(--shadow-sec);
+  }
+  .panel-title{
+    font-size:.8125rem;font-weight:600;color:var(--muted);
+    display:flex;align-items:center;gap:.4375rem;margin:.875rem 0 .25rem;
+  }
+  .panel-title i{width:.625rem;height:.625rem;border-radius:2px;flex:none;}
+  .panel-title em{font-style:normal;font-weight:500;color:var(--muted);opacity:.85;}
+  @media(max-width:44rem){ .panel-title{flex-wrap:wrap;} .panel-title em{flex-basis:100%;} }
+  .plot{display:block;width:100%;overflow:visible;}
+  .grid-line{stroke:var(--line);stroke-width:1;}
+  .axis-text{fill:var(--muted);font-size:11px;font-family:inherit;}
+  .series-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+  .end-dot{stroke:var(--paper);stroke-width:2;}
+  .end-label{font-size:12px;font-weight:700;font-family:inherit;fill:var(--navy);}
+  .crosshair{stroke:var(--navy-soft);stroke-width:1;opacity:.45;}
+  .hover-dot{stroke:var(--paper);stroke-width:2;}
+  .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw .9s ease forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+
+  .tip{
+    position:absolute;pointer-events:none;z-index:5;
+    background:var(--navy);color:#fff;border-radius:10px;
+    padding:.625rem .75rem;font-size:.8125rem;line-height:1.35;
+    box-shadow:0 .5rem 1.5rem -.5rem rgba(6,42,80,.5);
+    min-width:9.5rem;transform:translate(-50%,-100%);
+  }
+  .tip.below{transform:translate(-50%,0);}
+  .tip[hidden]{display:none;}
+  .tip .when{font-weight:700;margin-bottom:.375rem;}
+  .tip .row{display:flex;align-items:center;gap:.4375rem;}
+  .tip .row + .row{margin-top:.1875rem;}
+  .tip .row i{width:.75rem;height:2px;border-radius:1px;flex:none;}
+  .tip .row b{font-weight:700;}
+  .tip .row span{color:#A9BDD4;}
+  .tip .tip-why{
+    margin-top:.4375rem;padding-top:.4375rem;border-top:1px solid rgba(255,255,255,.18);
+    font-size:.75rem;color:#F2B8B2;
+  }
+
+  /* ---------------- Por qué se pierde ---------------- */
+  /* Sale de la tarjeta de la gráfica: es una lectura distinta del mismo dato y
+     mezclarlas obligaba a una caja con tres asuntos dentro. */
+  .why-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sec);
+    padding:clamp(1.125rem,2.5vw,1.5rem);margin-top:.75rem;box-shadow:var(--shadow-sec);
+  }
+  .why-card h3{margin:0 0 1rem;font-size:1rem;font-weight:700;letter-spacing:-0.015em;}
+  .why-card ul{list-style:none;margin:0;padding:0;display:grid;gap:1rem;}
+  .why-card li{display:grid;grid-template-columns:1fr auto;gap:.3125rem .875rem;align-items:baseline;}
+  .why-card .cause{font-size:.9375rem;font-weight:600;}
+  .why-card .amount{font-size:.9375rem;font-weight:700;color:var(--red-ink);white-space:nowrap;}
+  .why-card .track{grid-column:1/-1;height:6px;border-radius:3px;background:var(--mist);overflow:hidden;}
+  .why-card .track i{display:block;height:100%;border-radius:3px;background:var(--red);}
+  .why-card .detail{grid-column:1/-1;font-size:.8125rem;color:var(--muted);margin-top:-.0625rem;max-width:62ch;}
+  .why-foot{
+    margin:1.125rem 0 0;padding-top:.875rem;border-top:1px solid var(--line);
+    font-size:.8125rem;color:var(--muted);
+  }
+  .band-finde{fill:#0C5FA8;opacity:.055;}
+
+  .chart-foot{
+    display:flex;align-items:center;justify-content:flex-end;
+    margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line);
+  }
+  .link-btn{
+    background:none;border:none;color:var(--muted);font-weight:600;font-size:.8125rem;
+    text-decoration:underline;text-underline-offset:3px;padding:.25rem;
+  }
+  .link-btn:hover{color:var(--navy);}
+  .data-table{width:100%;border-collapse:collapse;margin-top:.875rem;font-size:.8125rem;}
+  .data-table[hidden]{display:none;}
+  .data-table caption{text-align:left;color:var(--muted);padding-bottom:.5rem;}
+  .data-table th,.data-table td{padding:.4375rem .5rem;border-bottom:1px solid var(--line);text-align:right;}
+  .data-table th:first-child,.data-table td:first-child{text-align:left;}
+  .data-table th{font-weight:600;color:var(--muted);}
+  .table-scroll{max-height:16rem;overflow-y:auto;}
+
+  /* ---------------- Calendario ---------------- */
+  .cal-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sec);
+    padding:clamp(1.125rem,2.5vw,1.5rem);box-shadow:var(--shadow-sec);
+  }
+  .cal-nav{display:flex;align-items:center;gap:.5rem;}
+  .cal-nav .month{font-size:.875rem;font-weight:600;min-width:9rem;text-align:center;}
+  .cal-nav button{
+    background:var(--paper);border:1.5px solid var(--line);color:var(--navy);
+    width:2rem;height:2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  }
+  .cal-nav button:hover:not(:disabled){border-color:var(--navy);}
+  .cal-nav button:disabled{opacity:.35;cursor:default;}
+
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.3125rem;}
+  .cal-dow{
+    font-size:.6875rem;font-weight:700;color:var(--muted);
+    text-align:center;padding-bottom:.25rem;
+  }
+  .cal-day{
+    min-height:3.25rem;border:1px solid var(--line);border-radius:var(--r-el);
+    background:var(--paper);color:var(--navy);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.0625rem;
+    font-size:.8125rem;padding:.125rem;transition:border-color .15s ease,transform .15s ease;
+  }
+  .cal-day .n{font-weight:600;line-height:1;}
+  .cal-day .v{font-size:.625rem;font-weight:700;line-height:1;}
+  .cal-day.empty{border:none;background:none;cursor:default;}
+  .cal-day.none{color:var(--muted);}
+  .cal-day.has:hover{transform:translateY(-1px);border-color:var(--navy);}
+  .cal-day.today{box-shadow:inset 0 0 0 2px var(--navy-soft);}
+  .cal-day[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--green);}
+  /* Rampa secuencial de un solo tono: más visitas, más oscuro. */
+  .cal-day.s1{background:#E7F3EE;border-color:#D3E9E0;}
+  .cal-day.s2{background:#BFE0D3;border-color:#A9D5C4;}
+  .cal-day.s3{background:#7FC3AA;border-color:#6AB89B;}
+  .cal-day.s4{background:#3E9E7E;border-color:#2E9070;color:#fff;}
+  .cal-day.s5{background:#138363;border-color:#0E7357;color:#fff;}
+
+  .cal-detail{
+    margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line);
+  }
+  .cal-detail h3{margin:0 0 .625rem;font-size:.9375rem;font-weight:700;letter-spacing:-0.01em;}
+  .cal-detail ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem;}
+  .cal-detail li{
+    display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;
+    font-size:.875rem;padding:.5rem .625rem;background:var(--mist);border-radius:var(--r-el);
+  }
+  .cal-detail li b{font-weight:600;}
+  .cal-detail li span{color:var(--muted);font-size:.8125rem;white-space:nowrap;}
+  .cal-detail .none{font-size:.875rem;color:var(--muted);}
+
   .noscript{
     margin:1.5rem auto;max-width:36rem;background:var(--amber-pale);color:var(--amber);
     border:1px solid #EBD3A8;border-radius:var(--radius);padding:1rem 1.25rem;font-size:.9375rem;
@@ -262,6 +487,323 @@
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
   }
+  /* ================= Pestañas del panel =================
+     El panel tiene tres vistas y sólo una ocupa la pantalla a la vez. Los
+     indicadores se quedan arriba siempre: son el marcador, no una vista más. */
+  .tabs{
+    display:flex;gap:.375rem;margin-top:1.5rem;
+    border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    position:relative;display:inline-flex;align-items:center;gap:.5rem;
+    background:none;border:none;color:var(--muted);font-weight:600;font-size:.9375rem;
+    padding:.75rem 1rem;border-radius:var(--r-el) var(--r-el) 0 0;white-space:nowrap;
+    transition:color .15s ease,background .15s ease;
+  }
+  .tab:hover{color:var(--navy);background:var(--mist);}
+  .tab[aria-selected="true"]{color:var(--navy);}
+  .tab[aria-selected="true"]::after{
+    content:"";position:absolute;left:1rem;right:1rem;bottom:-1px;height:3px;
+    background:var(--green);border-radius:3px 3px 0 0;
+  }
+  .tab .n{
+    font-size:.75rem;font-weight:700;line-height:1;padding:.1875rem .4375rem;
+    border-radius:999px;background:var(--mist);color:var(--muted);
+  }
+  .tab[aria-selected="true"] .n{background:var(--green-pale);color:var(--green);}
+  .tab .n.hot{background:var(--red-pale);color:var(--red-ink);}
+  .tabpanel[hidden]{display:none;}
+  .tabpanel{padding-top:1.5rem;animation:panelIn .22s ease;}
+  @keyframes panelIn{from{opacity:0;transform:translateY(.375rem);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.tabpanel{animation:none;}}
+
+  /* ---- Barra de aviso: el dolor, en una línea, sobre la vista activa ---- */
+  .alertbar{
+    display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;
+    background:var(--red-pale);border:1px solid var(--red-line);color:var(--red-ink);
+    border-radius:var(--r-card);padding:.75rem 1rem;margin-bottom:1.125rem;
+    font-size:.875rem;font-weight:600;
+  }
+  .alertbar .pulse{
+    width:.5rem;height:.5rem;border-radius:50%;background:var(--red);flex:none;
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.8);}}
+  @media(prefers-reduced-motion:reduce){.alertbar .pulse{animation:none;}}
+  .alertbar .sep{opacity:.4;}
+  .alertbar .tail{margin-left:auto;font-weight:500;opacity:.85;}
+  .alertbar.ok{background:var(--green-pale);border-color:#BFE0D2;color:var(--green);}
+  .alertbar.ok .pulse{background:var(--green);animation:none;}
+
+  /* ---- Chips de delta: lo que acaba de cambiar, junto al número ---- */
+  .delta{
+    display:inline-flex;align-items:center;gap:.25rem;vertical-align:middle;
+    margin-left:.5rem;font-size:.75rem;font-weight:700;line-height:1;
+    padding:.25rem .5rem;border-radius:999px;
+    background:var(--green-pale);color:var(--green);
+    animation:deltaIn .4s cubic-bezier(.2,1.4,.4,1);
+  }
+  .delta.warn{background:var(--red-pale);color:var(--red-ink);}
+  @keyframes deltaIn{from{opacity:0;transform:translateY(.5rem) scale(.7);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.delta{animation:none;}}
+
+  /* ================= Chat: cajón lateral =================
+     Fijo a la derecha en todos los tamaños. En pantalla ancha el contenido se
+     aparta en vez de quedar tapado: el visitante ve moverse los indicadores
+     mientras la conversación avanza, que es lo que hay que enseñar. */
+  .chat-panel{
+    position:fixed;top:0;right:0;bottom:0;z-index:60;
+    width:min(27rem,100%);height:100%;max-height:none;border-radius:0;
+    background:var(--paper);border:none;border-left:1px solid var(--line);
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:-18px 0 48px -24px rgba(6,42,80,.45);
+    transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  .chat-panel.open{transform:translateX(0);}
+  .chat-panel.no-anim{transition:none !important;}
+  @media(min-width:75rem){
+    body.chat-open{padding-right:min(27rem,100%);}
+    body.chat-open .scrim{display:none;}
+  }
+  .scrim{
+    position:fixed;inset:0;z-index:55;background:rgba(6,42,80,.32);
+    opacity:0;pointer-events:none;transition:opacity .28s ease;
+  }
+  body.chat-open .scrim{opacity:1;pointer-events:auto;}
+  @media(prefers-reduced-motion:reduce){
+    .chat-panel{transition:none;} .scrim{transition:none;}
+  }
+
+  /* ---- Cabecera del chat ---- */
+  .chat-header{
+    display:flex;align-items:center;gap:.625rem;padding:.75rem .875rem;
+    background:var(--navy);color:#fff;border-bottom:none;
+  }
+  .chat-header .back,.chat-header .close{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:none;border:none;color:#fff;font-size:1.125rem;padding:.25rem;
+    line-height:1;opacity:.85;border-radius:6px;
+  }
+  .chat-header .back:hover,.chat-header .close:hover{opacity:1;background:rgba(255,255,255,.14);}
+  .chat-header .close{margin-left:auto;}
+  .chat-header .avatar{
+    width:2.25rem;height:2.25rem;font-size:.8125rem;
+    background:var(--green);color:#fff;
+  }
+  .chat-id{min-width:0;}
+  .ch-name{font-weight:700;font-size:.9375rem;letter-spacing:-0.01em;color:#fff;}
+  .ch-sub{
+    font-size:.75rem;color:#A9C4E0;display:flex;align-items:center;gap:.3125rem;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .ch-sub.live{color:#7FE0BE;}
+  /* Franja de contexto: qué lead es y en qué estado está, sin salir del chat. */
+  .chat-meta{
+    display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+    padding:.5rem .875rem;background:var(--navy-soft);color:#CBDCEE;
+    font-size:.75rem;font-weight:600;
+  }
+  .chat-meta .badge{font-size:.6875rem;}
+  .chat-meta .dotsep{opacity:.45;}
+
+  /* ---- Cuerpo: papel tapiz propio, una retícula de celdas solares ---- */
+  .chat-body{
+    flex:1;overflow-y:auto;padding:1rem .875rem 1.25rem;
+    display:flex;flex-direction:column;gap:.375rem;
+    background-color:#EAEFE9;
+    background-image:
+      linear-gradient(rgba(6,42,80,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(6,42,80,.045) 1px,transparent 1px),
+      radial-gradient(circle at 50% 0,rgba(19,131,99,.10),transparent 60%);
+    background-size:22px 22px,22px 22px,100% 22rem;
+  }
+  .daychip{align-self:center;margin:.25rem 0 .5rem;}
+  .daychip span{
+    display:inline-block;background:rgba(255,255,255,.92);color:var(--muted);
+    font-size:.6875rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:.25rem .625rem;border-radius:999px;box-shadow:0 1px 2px rgba(6,42,80,.12);
+  }
+
+  /* ---- Burbujas, con cola ---- */
+  .bubble-row{display:flex;}
+  .bubble-row.client{justify-content:flex-start;}
+  .bubble-row.bot{justify-content:flex-end;}
+  .bubble{
+    position:relative;max-width:85%;padding:.4375rem .625rem .375rem;
+    border-radius:.5rem;font-size:.9375rem;line-height:1.42;
+    box-shadow:0 1px .5px rgba(6,42,80,.13);
+    animation:bubbleIn .22s ease-out;
+  }
+  @keyframes bubbleIn{from{opacity:0;transform:translateY(.375rem) scale(.98);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.bubble{animation:none;}}
+  .bubble.client{background:#fff;color:var(--navy);border-top-left-radius:0;}
+  .bubble.bot{background:#D6F2E3;color:#0A3B2C;border-top-right-radius:0;}
+  .bubble::after{content:"";position:absolute;top:0;width:0;height:0;border:.5rem solid transparent;}
+  .bubble.client::after{left:-.5rem;border-top-color:#fff;border-right:0;border-bottom:0;}
+  .bubble.bot::after{right:-.5rem;border-top-color:#D6F2E3;border-left:0;border-bottom:0;}
+  .bubble .time{
+    display:block;text-align:right;margin-top:.125rem;
+    font-size:.625rem;font-weight:600;opacity:.55;
+  }
+  .bubble.bot .time{opacity:.7;}
+  .bubble .tick{color:#2E9BD6;font-size:.6875rem;letter-spacing:-.08em;}
+  .bubble b{font-weight:700;}
+  .bubble-row + .bubble-row.client .bubble.client::after,
+  .bubble-row + .bubble-row.bot .bubble.bot::after{display:none;}
+  .bubble-row + .bubble-row.client .bubble.client{border-top-left-radius:.5rem;}
+  .bubble-row + .bubble-row.bot .bubble.bot{border-top-right-radius:.5rem;}
+
+  .typing-row{display:flex;justify-content:flex-end;}
+  .typing{
+    display:flex;gap:.25rem;padding:.625rem .75rem;background:#D6F2E3;
+    border:none;border-radius:.5rem;border-top-right-radius:0;
+    box-shadow:0 1px .5px rgba(6,42,80,.13);
+  }
+  .typing span{width:.375rem;height:.375rem;border-radius:50%;background:#3E8F73;animation:blink 1.2s infinite;}
+
+  /* ---- Aviso del sistema dentro del chat ---- */
+  .syschip{align-self:center;max-width:92%;margin:.375rem 0;}
+  .syschip span{
+    display:inline-flex;align-items:center;gap:.4375rem;
+    background:#FFF6DC;color:#7A5B12;border:1px solid #F0DFAE;
+    font-size:.75rem;font-weight:600;line-height:1.35;
+    padding:.4375rem .75rem;border-radius:.5rem;text-align:center;
+  }
+  .syschip.good span{background:#E7F3EE;color:var(--green);border-color:#BFE0D2;}
+
+  /* ---- Elecciones y pie ---- */
+  .chat-choices{
+    display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem .875rem;
+    border-top:1px solid var(--line);background:var(--paper);
+  }
+  .chat-choices:empty{display:none;}
+  .choice-btn{
+    flex:1 1 auto;background:var(--paper);border:1.5px solid var(--green);color:var(--green);
+    font-weight:600;font-size:.875rem;padding:.5625rem .875rem;border-radius:999px;
+    transition:background .15s ease,transform .1s ease;
+  }
+  .choice-btn:hover{background:var(--green-pale);}
+  .choice-btn:active{transform:scale(.97);}
+  .choice-btn:disabled{opacity:.45;cursor:default;}
+  .chat-fakeinput{background:var(--paper);}
+
+  /* En pantalla estrecha el cajón ocupa todo y no hace falta apartar nada. */
+  @media(max-width:47.9375rem){
+    .chat-panel{width:100%;border-left:none;}
+  }
+
+  /* ---- Etiqueta de la cabecera, donde estaba la navegacion por anclas ---- */
+  .hdr-tag{
+    margin-right:auto;font-size:.8125rem;font-weight:600;color:var(--muted);
+    padding:.375rem .75rem;background:var(--mist);border-radius:999px;line-height:1;
+  }
+  @media(max-width:40rem){ .hdr-tag{display:none;} }
+
+  /* ---- Tarjeta de resultado dentro del chat ---- */
+  .result-card{
+    align-self:center;width:100%;max-width:20rem;margin:.5rem 0 .25rem;
+    background:var(--paper);border:1px solid var(--green);border-radius:.75rem;
+    padding:.875rem;box-shadow:0 .5rem 1.5rem -.75rem rgba(6,42,80,.35);
+    animation:bubbleIn .3s ease-out;
+  }
+  .result-card h4{
+    margin:0 0 .625rem;font-size:.8125rem;font-weight:700;color:var(--green);
+    text-transform:uppercase;letter-spacing:.06em;
+  }
+  .result-kit{
+    display:flex;align-items:baseline;justify-content:space-between;gap:.625rem;
+    padding-bottom:.5rem;margin-bottom:.5rem;border-bottom:1px solid var(--line);
+  }
+  .result-kit .k{font-size:.875rem;font-weight:700;line-height:1.3;}
+  .result-kit .v{font-size:1rem;font-weight:800;color:var(--green);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .result-card p{margin:0 0 .75rem;font-size:.75rem;color:var(--muted);line-height:1.4;}
+  .confirm-btn{
+    width:100%;background:var(--green);color:#fff;border:none;font-weight:700;
+    font-size:.875rem;padding:.6875rem;border-radius:.5rem;
+  }
+  .confirm-btn:hover{background:var(--green-bright);}
+
+  .replay{display:flex;justify-content:center;padding:.5rem 0 .25rem;}
+  .replay button{
+    background:rgba(255,255,255,.92);border:1px solid var(--line);color:var(--muted);
+    font-weight:600;font-size:.75rem;padding:.4375rem .875rem;border-radius:999px;
+  }
+  .replay button:hover{border-color:var(--navy);color:var(--navy);}
+
+  /* El marcador, mas apretado cuando el cajon se lleva parte del ancho. */
+  @media(min-width:75rem){
+    body.chat-open .stats{grid-template-columns:repeat(2,1fr);}
+    body.chat-open .hero h1{font-size:clamp(1.5rem,3vw,2rem);}
+  }
+
+  /* ================= Densidad de la vista de arranque =================
+     Todo lo que decide la llamada — marcador, pestañas y el aviso de quien se
+     enfrió — tiene que caber en una pantalla sin rodar la rueda. El titular
+     presenta, pero no puede quedarse con la mitad del alto. */
+  .sec-first{padding-top:clamp(1rem,2.2vw,1.5rem);}
+  .hero h1{font-size:clamp(1.375rem,2.9vw,2rem);max-width:26ch;}
+  .hero p{margin:.375rem 0 0;font-size:.9375rem;}
+  .deck{margin-top:clamp(.875rem,1.8vw,1.125rem);padding:.8125rem clamp(.875rem,2vw,1.125rem);}
+  .deck-row + .deck-row{margin-top:.625rem;padding-top:.625rem;}
+  .stats{margin-top:.75rem;gap:.625rem;}
+  .stat-card{padding:.8125rem .9375rem;}
+  .stat-card .label{margin-bottom:.25rem;}
+  .stat-card .value{font-size:clamp(1.375rem,2.2vw,1.625rem);}
+  .stat-card .hint{margin-top:.25rem;}
+  .loss{padding:.875rem .9375rem;}
+  .loss .value{font-size:clamp(1.75rem,4vw,2.375rem);}
+  .loss .hint{font-size:.875rem;}
+  .tabs{margin-top:1rem;}
+  .tabpanel{padding-top:1rem;}
+  .alertbar{padding:.625rem .875rem;margin-bottom:.875rem;}
+  .sec-head{margin-bottom:.875rem;}
+
+  /* ---- Ficha de kits dentro del chat ---- */
+  .kitcard{
+    width:100%;max-width:19rem;background:#fff;border-radius:.5rem;border-top-right-radius:0;
+    overflow:hidden;box-shadow:0 1px .5px rgba(6,42,80,.13);animation:bubbleIn .22s ease-out;
+  }
+  .kitrow{display:grid;grid-template-columns:1fr auto;gap:.125rem .625rem;padding:.625rem .75rem;}
+  .kitrow + .kitrow{border-top:1px solid var(--line);}
+  .kitrow.rec{background:var(--green-pale);}
+  .kitrow .kn{font-size:.8125rem;font-weight:700;line-height:1.3;}
+  .kitrow .kp{
+    font-size:.875rem;font-weight:800;color:var(--green);white-space:nowrap;
+    font-variant-numeric:tabular-nums;text-align:right;
+  }
+  .kitrow .kd{grid-column:1/-1;font-size:.6875rem;color:var(--muted);line-height:1.35;}
+  .kitrow .tag{
+    display:inline-block;margin-left:.375rem;vertical-align:middle;
+    background:var(--green);color:#fff;font-size:.5625rem;font-weight:700;
+    letter-spacing:.04em;text-transform:uppercase;padding:.125rem .375rem;border-radius:999px;
+  }
+  .kitfoot{
+    padding:.5rem .75rem;background:var(--mist);border-top:1px solid var(--line);
+    font-size:.6875rem;color:var(--muted);line-height:1.4;
+  }
+
+  /* En móvil el panel de control se comia la pantalla antes de llegar a las
+     pestañas: etiqueta y campo vuelven a compartir línea, repartidos. */
+  @media(max-width:44rem){
+    .deck-group{
+      flex-direction:row;align-items:center;justify-content:space-between;
+      gap:.625rem;width:100%;
+    }
+    .deck-group input,.deck #inTicket{width:9rem;flex:none;}
+    .deck-row + .deck-row{gap:.5rem .625rem;}
+    .deck .fmt{display:none;}
+    .deck .kill{margin-left:0;width:100%;justify-content:center;margin-top:.25rem;}
+  }
+  @media(max-width:30rem){
+    /* Sin los pies, las cuatro cifras caben de dos en dos: el marcador entero
+       se ve de una vez en lugar de ocupar cuatro pantallazos. */
+    .stats{gap:.5rem;grid-template-columns:repeat(2,1fr);}
+    .stat-card .hint{display:none;}
+    .loss .hint{display:block;font-size:.8125rem;}
+    .stat-card .value{font-size:1.25rem;}
+  }
+
 </style>
 </head>
 <body>
@@ -271,13 +813,8 @@
     <a href="https://automatiza-solar-landing.vercel.app" aria-label="Automatiza Solar, ir a la página principal">
       <img src="/brand/logo-horizontal.svg" width="184" height="44" alt="Automatiza Solar">
     </a>
+    <span class="hdr-tag">Panel de leads &middot; demo</span>
     <div class="tools">
-      <div class="speed" role="group" aria-label="Velocidad de la conversación">
-        <span>Velocidad</span>
-        <button class="tool" data-speed="1" aria-pressed="true">Normal</button>
-        <button class="tool" data-speed="0.35" aria-pressed="false">Rápida</button>
-        <button class="tool" data-speed="0" aria-pressed="false">Al instante</button>
-      </div>
       <button class="tool" id="resetBtn">Reiniciar demo</button>
     </div>
   </div>
@@ -289,63 +826,179 @@
   </div>
 </noscript>
 
-<div class="wrap intro">
-  <h1>Esto es lo que verías mañana al levantarte.</h1>
-  <p>Cinco personas escribieron anoche. El agente las atendió, averiguó lo que necesitaba
-     cada una y dejó la visita agendada. Toca cualquier tarjeta para leer la conversación.</p>
-</div>
-
+<main>
 <div class="wrap">
+
+  <div class="hero sec-first">
+    <h1>Tu negocio, con alguien contestando siempre.</h1>
+    <p>Quién escribe, cuánto se cierra y qué visitas quedan agendadas.</p>
+  </div>
+
+  <!-- Todo lo que cambia lo que estás mirando vive aquí, sobre fondo oscuro:
+       se distingue de un vistazo de las superficies que sólo informan. -->
+  <div class="deck">
+      <div class="deck-row" role="group" aria-label="Periodo que se muestra">
+        <span class="deck-lab">Periodo</span>
+        <button class="chip" data-range="1" aria-pressed="false">Hoy</button>
+        <button class="chip" data-range="7" aria-pressed="false">7 días</button>
+        <button class="chip" data-range="30" aria-pressed="true">30 días</button>
+        <button class="chip" data-range="90" aria-pressed="false">90 días</button>
+        <span class="deck-sep" aria-hidden="true"></span>
+        <label class="deck-lab" for="pickDate">Un día</label>
+        <input type="date" id="pickDate">
+      </div>
+
+      <div class="deck-row">
+        <div class="deck-group">
+          <label class="deck-lab" for="inMsg">Mensajes que recibes al día</label>
+          <input type="number" id="inMsg" min="1" max="200" step="1" value="18" inputmode="numeric">
+        </div>
+        <div class="deck-group">
+          <label class="deck-lab" for="inTicket">Valor de tu venta media</label>
+          <input type="text" id="inTicket" inputmode="numeric" autocomplete="off"
+                 aria-describedby="ticketFmt">
+          <span class="fmt" id="ticketFmt">por instalación</span>
+        </div>
+        <button class="chip" type="button" id="resetTune">Volver a los míos</button>
+        <button class="kill" type="button" id="killBtn" aria-pressed="false">
+          <span class="dot" aria-hidden="true"></span><span id="killLabel">Apagar el agente</span>
+        </button>
+      </div>
+    </div>
+
+  <!-- El marcador no es una vista más: se queda arriba en las tres pestañas,
+       para que se vea moverse mientras la conversación de al lado avanza. -->
   <div class="stats">
-    <div class="stat-card accent">
+      <div class="stat-card accent">
       <div class="label">Respuesta media</div>
       <div class="value" id="statReply">—</div>
       <div class="hint">Desde que entra el mensaje</div>
     </div>
     <div class="stat-card" id="statRecovered">
-      <div class="label">Leads recuperados</div>
+      <div class="label">Ventas recuperadas</div>
       <div class="value" id="recoveredValue">0</div>
-      <div class="hint">Se habrían perdido sin respuesta</div>
+      <div class="hint" id="hintRecovered">No habrían comprado sin respuesta a tiempo</div>
     </div>
     <div class="stat-card" id="statRevenue">
-      <div class="label">Facturación cerrada</div>
+      <div class="label">Dinero generado</div>
       <div class="value" id="revenueValue">$0</div>
-      <div class="hint">Comprados y recuperados</div>
+      <div class="hint">Ventas cerradas en el periodo</div>
     </div>
     <div class="stat-card" id="statPipeline">
-      <div class="label">En visita agendada</div>
+      <div class="label">Valor en visitas</div>
       <div class="value" id="pipelineValue">$0</div>
-      <div class="hint">Pendiente de cerrar</div>
+      <div class="hint" id="hintPipeline">Pendiente de cerrar</div>
+    </div>
+    <div class="stat-card alarm loss" id="statLost">
+      <div class="loss-main">
+        <div class="label">Dinero que se habría ido</div>
+        <div class="value" id="lostValue">$0</div>
+      </div>
+      <div class="hint" id="hintLost">Sin nadie contestando fuera de horario</div>
+    </div>
+    </div>
+
+  <div class="tabs" role="tablist" aria-label="Vistas del panel">
+    <button class="tab" role="tab" type="button" id="tab-conv"
+            aria-controls="panel-conv" aria-selected="true" data-tab="conv">
+      Conversaciones <span class="n hot" id="tabConvN">0</span>
+    </button>
+    <button class="tab" role="tab" type="button" id="tab-graf"
+            aria-controls="panel-graf" aria-selected="false" data-tab="graf" tabindex="-1">
+      Gráficas
+    </button>
+    <button class="tab" role="tab" type="button" id="tab-cal"
+            aria-controls="panel-cal" aria-selected="false" data-tab="cal" tabindex="-1">
+      Visitas <span class="n" id="tabCalN">0</span>
+    </button>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-conv" aria-labelledby="tab-conv" tabindex="0">
+    <div class="alertbar" id="convAlert" role="status"></div>
+    <div class="sec-head">
+      <div class="t">
+        <h2>Las conversaciones de anoche</h2>
+        <p><span id="leadsCount"></span> escribieron con el negocio ya cerrado. Esto es lo que
+           pasó con cada una.</p>
+      </div>
+      <!-- La velocidad sólo afecta al chat: vive junto al chat, no en la cabecera. -->
+      <div class="speed" role="group" aria-label="Velocidad de la conversación">
+        <span>Velocidad</span>
+        <button class="tool" data-speed="1" aria-pressed="true">Normal</button>
+        <button class="tool" data-speed="0.35" aria-pressed="false">Rápida</button>
+        <button class="tool" data-speed="0" aria-pressed="false">Al instante</button>
+      </div>
+    </div>
+    <div class="leads" id="leadsList"></div>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-graf" aria-labelledby="tab-graf" tabindex="0" hidden>
+    <div class="sec-head">
+      <div class="t">
+        <h2>Cómo va entrando la gente</h2>
+        <p>Dos lecturas del mismo periodo, sobre el mismo eje: cuánta gente escribe
+           y cuánto dinero entra.</p>
+      </div>
+      <span class="range" id="chartRange"></span>
+    </div>
+    <section class="chart-card">
+
+    <div class="panel-title"><i style="background:#0C5FA8" aria-hidden="true"></i>Clientes que escribieron
+      <em>Entran igual con agente o sin él. Lo que cambia es lo que pasa después.</em></div>
+    <svg class="plot" id="plotLeads" role="img" aria-labelledby="plotLeadsTitle" preserveAspectRatio="none">
+      <title id="plotLeadsTitle">Clientes que escribieron, por periodo</title>
+    </svg>
+
+    <div class="panel-title"><i style="background:#138363" aria-hidden="true"></i>Dinero generado, acumulado
+      <em>El hueco entre las dos líneas es lo que se va sin contestar.</em></div>
+    <div class="legend">
+      <span class="key"><i class="sw on" aria-hidden="true"></i>Con agente</span>
+      <span class="key"><i class="sw off" aria-hidden="true"></i>Sin agente</span>
+    </div>
+    <svg class="plot" id="plotMoney" role="img" aria-labelledby="plotMoneyTitle" preserveAspectRatio="none">
+      <title id="plotMoneyTitle">Dinero generado, por periodo</title>
+    </svg>
+
+    <div class="tip" id="tip" hidden role="status"></div>
+
+    <div class="chart-foot">
+      <button class="link-btn" id="toggleTable" type="button" aria-expanded="false" aria-controls="dataTable">Ver datos</button>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table" id="dataTable" hidden>
+        <caption>Los mismos números de la gráfica, en tabla.</caption>
+        <thead><tr><th scope="col">Fecha</th><th scope="col">Clientes</th><th scope="col">Dinero generado</th></tr></thead>
+        <tbody id="dataBody"></tbody>
+      </table>
+    </div>
+  </section>
+    <div class="why-card" id="why">
+    <h3 id="whyTitle"></h3>
+    <ul id="whyList"></ul>
+    <p class="why-foot" id="whyFoot"></p>
+  </div>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-cal" aria-labelledby="tab-cal" tabindex="0" hidden>
+    <div class="sec-head">
+      <div class="t">
+        <h2>Visitas agendadas</h2>
+        <p>Clientes que quedaron con cita en vez de irse con la competencia.</p>
+      </div>
+      <div class="cal-nav">
+        <button type="button" id="calPrev" aria-label="Mes anterior">←</button>
+        <span class="month" id="calMonth"></span>
+        <button type="button" id="calNext" aria-label="Mes siguiente">→</button>
+      </div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-detail" id="calDetail"></div>
     </div>
   </div>
 
-  <div class="section-head">
-    <h2>Personas que escribieron</h2>
-    <span id="leadsCount"></span>
-  </div>
-
-  <div class="layout" id="layout">
-    <div class="leads" id="leadsList"></div>
-
-    <section class="chat-panel" id="chatPanel" style="display:none;" aria-label="Conversación" tabindex="-1">
-      <div class="chat-header">
-        <button class="back" id="chatBack" type="button" aria-label="Volver al panel">←</button>
-        <div class="avatar" id="chatAvatar" aria-hidden="true">?</div>
-        <div>
-          <div class="ch-name" id="chatName">Cliente</div>
-          <div class="ch-sub">Recreación visual · no es WhatsApp real</div>
-        </div>
-        <button class="close" id="chatClose" type="button" aria-label="Cerrar conversación">✕</button>
-      </div>
-      <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-relevant="additions"></div>
-      <div class="chat-choices" id="chatChoices"></div>
-      <div class="chat-fakeinput" aria-hidden="true">
-        <div class="box">Mensaje</div>
-        <div class="snd">➤</div>
-      </div>
-    </section>
-  </div>
 </div>
+</main>
 
 <section class="closing">
   <div class="wrap">
@@ -356,6 +1009,32 @@
       <a class="btn btn-solid" href="https://calendly.com/piedrahita-automatizasolar/30min">Agendar llamada de 30 minutos</a>
       <a class="btn btn-ghost" href="https://automatiza-solar-landing.vercel.app">Volver a la página</a>
     </div>
+  </div>
+</section>
+
+
+<div class="scrim" id="scrim"></div>
+
+<section class="chat-panel" id="chatPanel" style="display:none;" aria-label="Conversación" tabindex="-1">
+  <div class="chat-header">
+    <button class="back" id="chatBack" type="button" aria-label="Volver al panel">&#8592;</button>
+    <div class="avatar" id="chatAvatar" aria-hidden="true">?</div>
+    <div class="chat-id">
+      <div class="ch-name" id="chatName">Cliente</div>
+      <div class="ch-sub" id="chatSub">Recreación visual &middot; no es WhatsApp real</div>
+    </div>
+    <button class="close" id="chatClose" type="button" aria-label="Cerrar conversación">&#10005;</button>
+  </div>
+  <div class="chat-meta">
+    <span id="chatBadge" class="badge st-curiosidad">&mdash;</span>
+    <span class="dotsep" aria-hidden="true">&middot;</span>
+    <span id="chatWhen">escribió anoche</span>
+  </div>
+  <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-relevant="additions"></div>
+  <div class="chat-choices" id="chatChoices"></div>
+  <div class="chat-fakeinput" aria-hidden="true">
+    <div class="box">Mensaje</div>
+    <div class="snd">&#10148;</div>
   </div>
 </section>
 
@@ -385,6 +1064,37 @@
         desc:"Energía a toda hora: de noche, en días nublados o con consumo alto." }
   };
 
+  /* Ampliaciones sobre un sistema ya instalado. Misma regla que KITS: el precio
+     de cada pieza se define una sola vez y no se escribe a mano en ningún otro
+     sitio, así que no puede haber dos precios para el mismo panel. */
+  var AMPLIA = {
+    paneles: {
+      uno:"panel solar de 730W", varios:"paneles solares de 730W",
+      cortoUno:"panel", cortoVarios:"paneles", precio:1150000,
+      opciones:[2, 4, 6],
+      gancho:"Más generación de día. Hay que mirar que el inversor tenga margen.",
+      cierre:"el inversor y el espacio en el tejado"
+    },
+    baterias: {
+      uno:"batería de litio 51.2V/100Ah", varios:"baterías de litio 51.2V/100Ah",
+      cortoUno:"batería", cortoVarios:"baterías", precio:3900000,
+      opciones:[1, 2, 4],
+      gancho:"Más autonomía de noche y en los cortes. No genera más energía: la guarda.",
+      cierre:"el espacio del banco y el calibre del cableado"
+    }
+  };
+
+  function esAmplia(l){ return l.intencion === "paneles" || l.intencion === "baterias"; }
+  function precioAmplia(tipo, n){ return AMPLIA[tipo].precio * n; }
+  function piezaAmplia(tipo, n){
+    return n + " " + (n === 1 ? AMPLIA[tipo].uno : AMPLIA[tipo].varios);
+  }
+  /* En los botones y en boca del cliente va la forma corta: el nombre técnico
+     completo no cabe en una pastilla y nadie lo dice en voz alta. */
+  function piezaCorta(tipo, n){
+    return n + " " + (n === 1 ? AMPLIA[tipo].cortoUno : AMPLIA[tipo].cortoVarios);
+  }
+
   var STATUS = {
     comprado:   { label:"Comprado",        cls:"st-comprado"   },
     pendiente:  { label:"Pendiente",       cls:"st-pendiente"  },
@@ -393,23 +1103,76 @@
     recuperado: { label:"Recuperado",      cls:"st-recuperado" }
   };
 
+  /* Doce conversaciones de una noche, no todas iguales: unas piden sistema nuevo,
+     otras ya tienen el suyo instalado y sólo quieren más paneles o más baterías.
+     `apertura` es la primera frase de cada quien — es lo que hace que no suenen
+     todas al mismo guion. `intencion` decide qué rama de la conversación corre. */
   function initialLeads(){
     return [
-      { id:"marcela", name:"Marcela Restrepo", business:null, hora:"9:12 p.m.", respuesta:6,
+      { id:"marcela", name:"Marcela Restrepo", business:null, hora:"8:41 p.m.", respuesta:6,
+        intencion:"kit", apertura:"Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar?",
         consumoTexto:"Factura mensual de $280.000", billCOP:280000, lugar:"Techo",
         kit:2, estado:"comprado" },
-      { id:"julian", name:"Julián Ospina", business:null, hora:"10:03 p.m.", respuesta:9,
+
+      { id:"yuliana", name:"Yuliana Cardona", business:null, hora:"8:58 p.m.", respuesta:5,
+        intencion:"paneles", kitInstalado:1, cantidad:4, cerrado:false,
+        apertura:"Buenas, ustedes me instalaron el Kit 1 el año pasado. ¿Le puedo poner más paneles?",
+        consumoTexto:"Kit 1 instalado hace 14 meses — la factura le volvió a subir",
+        billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" },
+
+      { id:"julian", name:"Julián Ospina", business:null, hora:"9:17 p.m.", respuesta:9,
+        intencion:"kit", apertura:"Buenas noches, quiero saber precios de paneles para una finca",
         consumoTexto:"No conoce el consumo exacto — finca para 4 personas", billCOP:null, lugar:"Patio",
         kit:1, estado:"pendiente" },
-      { id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", hora:"10:21 p.m.", respuesta:5,
+
+      { id:"wilson", name:"Wilson Agudelo", business:"Taller Los Andes", hora:"9:39 p.m.", respuesta:6,
+        intencion:"baterias", kitInstalado:2, cantidad:2, cerrado:false,
+        apertura:"Hola, tengo el Kit 2 en el taller. Se me va la luz de noche y se cae todo, ¿venden baterías sueltas?",
+        consumoTexto:"Kit 2 instalado — se queda corto en los cortes de la noche",
+        billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" },
+
+      { id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", hora:"9:52 p.m.", respuesta:5,
+        intencion:"kit", apertura:"Buenas, necesito cotización para la ferretería",
         consumoTexto:"Factura mensual de $610.000", billCOP:610000, lugar:"Techo",
         kit:3, estado:"visita" },
+
+      { id:"natalia", name:"Natalia Ríos", business:null, hora:"10:08 p.m.", respuesta:8,
+        intencion:"paneles", kitInstalado:2, cantidad:2, cerrado:true,
+        apertura:"Hola! Tengo el Kit 2 y quiero agregar un par de paneles, ¿cuánto sale?",
+        consumoTexto:"Kit 2 instalado — quiere cubrir el aire acondicionado del cuarto",
+        billCOP:null, lugar:"Techo", kit:null, estado:"pendiente" },
+
+      { id:"oscar", name:"Óscar Mejía", business:"Hotel Campestre", hora:"10:24 p.m.", respuesta:5,
+        intencion:"kit", apertura:"Buenas, para un hotel pequeño, ¿qué me recomiendan?",
+        consumoTexto:"Factura mensual de $1.480.000", billCOP:1480000, lugar:"Techo",
+        kit:null, estado:"curiosidad" },
+
       { id:"andres", name:"Andrés Zapata", business:null, hora:"10:47 p.m.", respuesta:4,
+        intencion:"kit", apertura:"Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar?",
         consumoTexto:"Factura mensual de $195.000", billCOP:195000, lugar:"Techo",
         kit:null, estado:"curiosidad" },
+
+      { id:"claudia", name:"Claudia Henao", business:"Panadería La Espiga", hora:"10:55 p.m.", respuesta:7,
+        intencion:"baterias", kitInstalado:3, cantidad:2, cerrado:true,
+        apertura:"Buenas noches, tengo el Kit 3 en la panadería. Quiero más respaldo para los hornos de madrugada.",
+        consumoTexto:"Kit 3 instalado — arranca los hornos a las 3 a.m.",
+        billCOP:null, lugar:"Techo", kit:null, estado:"visita" },
+
+      { id:"hernan", name:"Hernán Castaño", business:null, hora:"11:12 p.m.", respuesta:6,
+        intencion:"kit", apertura:"Buenas, cuánto cuesta poner paneles en una casa de dos pisos?",
+        consumoTexto:"No conoce el consumo exacto — casa de dos pisos, 5 personas",
+        billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" },
+
       { id:"luisfernando", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", hora:"11:34 p.m.", respuesta:7,
+        intencion:"kit", apertura:"Hola, quiero cotizar paneles para el restaurante",
         consumoTexto:"No conoce el consumo exacto — local con uso constante de neveras", billCOP:null, lugar:"Patio",
-        kit:2, estado:"recuperado" }
+        kit:2, estado:"recuperado" },
+
+      { id:"paula", name:"Paula Betancur", business:"Lavandería Aqua", hora:"11:49 p.m.", respuesta:5,
+        intencion:"paneles", kitInstalado:1, cantidad:6, cerrado:false,
+        apertura:"Hola, monté una lavandería y el Kit 1 se me quedó corto. Necesito más paneles ya.",
+        consumoTexto:"Kit 1 instalado — abrió la lavandería y dobló el consumo",
+        billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" }
     ];
   }
 
@@ -419,6 +1182,11 @@
   var speed = 1;
   var transcripts = {};   /* id -> [{who,text,time}] de conversaciones ya vistas */
 
+  /* Leads recuperados durante esta demo. Se guardan aparte de `historia` para
+     poder volver a aplicarlos sobre un histórico recién generado: la calculadora,
+     "Reiniciar demo" y un F5 lo regeneran desde cero. */
+  var recuperadosEnVivo = [];
+
   /* ============ Utilidades ============ */
 
   function esc(s){
@@ -426,6 +1194,7 @@
       .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
       .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
   }
+  function soloDigitos(v){ return String(v == null ? "" : v).replace(/\D/g, ""); }
   function formatCOP(n){
     if(n === null || n === undefined) return "—";
     return "$" + Math.round(n).toLocaleString("es-CO");
@@ -442,7 +1211,18 @@
   function consumoDisplay(l){
     return l.billCOP ? (l.consumoTexto + " (≈ " + kwhRange(l.billCOP) + ")") : l.consumoTexto;
   }
-  function valorDe(l){ return l.kit ? KITS[l.kit].precio : null; }
+  function valorDe(l){
+    if(esAmplia(l)) return l.cerrado ? precioAmplia(l.intencion, l.cantidad) : null;
+    return l.kit ? KITS[l.kit].precio : null;
+  }
+
+  /* Lo que hay sobre la mesa aunque todavía no se haya cerrado nada: es lo que
+     cuenta la barra roja de arriba. Para un sistema nuevo, el kit que le toca
+     por su factura; para una ampliación, lo que vino a pedir. */
+  function valorEnJuego(l){
+    if(esAmplia(l)) return precioAmplia(l.intencion, l.cantidad);
+    return KITS[kitRecomendado(l)].precio;
+  }
 
   /* La recomendación sale de la factura, no de un número escrito a mano. */
   function recomendarKit(bill){
@@ -461,10 +1241,12 @@
 
   /* ============ Estado guardado (sobrevive a un F5 accidental) ============ */
 
-  var STORE_KEY = "as-demo-v2";
+  var STORE_KEY = "as-demo-v4";
   function save(){
     try{
-      sessionStorage.setItem(STORE_KEY, JSON.stringify({ leads:leads, transcripts:transcripts }));
+      sessionStorage.setItem(STORE_KEY, JSON.stringify({
+        leads:leads, transcripts:transcripts, recuperados:recuperadosEnVivo
+      }));
     }catch(e){ /* modo privado o almacenamiento bloqueado: seguimos sin guardar */ }
   }
   function restore(){
@@ -475,6 +1257,7 @@
       if(data && Array.isArray(data.leads) && data.leads.length){
         leads = data.leads;
         transcripts = data.transcripts || {};
+        recuperadosEnVivo = Array.isArray(data.recuperados) ? data.recuperados : [];
       }
     }catch(e){ /* dato corrupto: arrancamos limpio */ }
   }
@@ -482,48 +1265,882 @@
     try{ sessionStorage.removeItem(STORE_KEY); }catch(e){}
   }
 
+  /* ============ Histórico ============ */
+  /* Datos ficticios, generados con semilla fija: la misma pantalla en cada recarga
+     y en cada llamada de venta. Volumen calibrado al cliente objetivo (+15/día). */
+
+  var DIAS_HISTORICO = 120;
+  var DIAS_FUTURO    = 21;      /* visitas ya agendadas por delante */
+  var NOMBRES = ["Marcela Restrepo","Julián Ospina","Diana Muñoz","Andrés Zapata","Luis Fernando Gómez",
+                 "Carolina Arias","Jhon Jairo Vélez","Paula Betancur","Óscar Mejía","Yuliana Cardona",
+                 "Wilson Agudelo","Natalia Ríos","Hernán Castaño","Sandra Quintero","Mauricio Loaiza",
+                 "Claudia Henao","Édinson Tabares","Liliana Marín","Fabián Zuluaga","Gloria Palacio"];
+  var NEGOCIOS = [null,null,null,"Ferretería El Tornillo","Restaurante La Cazuela","Panadería La Espiga",
+                  "Taller Los Andes","Hotel Campestre","Lavandería Aqua",null,null];
+
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function seedFrom(str){
+    var h = 2166136261;
+    for(var i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function dayKey(d){
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  }
+  function pad2(n){ return n < 10 ? "0" + n : "" + n; }
+  function atMidnight(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function addDays(d, n){ var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+
+  var HOY = atMidnight(new Date());
+  var historia = [];        /* [{key, date, personas, recuperados, ventas, ingresos, respuesta, visitas:[...]}] */
+  var porDia = {};
+  var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  /* Ticket medio del catálogo real (40/40/20 sobre los tres kits). Es el valor por
+     defecto de la calculadora; si el visitante pone el suyo, todo escala con él. */
+  var TICKET_BASE = Math.round(KITS[1].precio * 0.4 + KITS[2].precio * 0.4 + KITS[3].precio * 0.2);
+
+  var ajustes = { mensajesDia: 18, ticketMedio: TICKET_BASE };
+
+  /* Escenario sin agente. Los mensajes entran igual — lo que cambia es qué pasa
+     después. Cada peso perdido tiene una causa concreta, y el panel la nombra. */
+  var SIN_AGENTE = {
+    nocheEntreSemana: 0.58,  /* de un día laborable, cuánto entra con el negocio cerrado */
+    ocupado:          0.18,  /* en horario, pero estabas en un tejado y contestaste tarde */
+    rescatados:       0.22,  /* de los no atendidos a tiempo, los que aún compran después */
+    cierre:           0.04,  /* el mismo cierre de siempre, para quien sí atiendes */
+    visitas:          0.30   /* de las visitas que hoy agendas, las que seguirías agendando */
+  };
+
+  var CAUSAS = {
+    noche:  "Entró de noche, entre semana",
+    finde:  "Entró en fin de semana",
+    ocupado:"Entró en horario, pero estabas ocupado"
+  };
+
+  function generarHistoria(){
+    var rnd = mulberry32(seedFrom("automatiza-solar-" + dayKey(HOY) + "-" +
+                                  ajustes.mensajesDia + "-" + ajustes.ticketMedio));
+    var out = [];
+    porDia = {};
+    var total = DIAS_HISTORICO + DIAS_FUTURO;
+    var restoCon = 0;   /* fracción de venta que pasa al día siguiente */
+    var restoVis = 0;   /* lo mismo para las visitas */
+
+    for(var i = 0; i < total; i++){
+      var fecha = addDays(HOY, i - DIAS_HISTORICO + 1);
+      var futuro = fecha > HOY;
+      var dow = fecha.getDay();
+
+      /* Menos gente en domingo, y una mejora suave a lo largo de los meses. */
+      var factorDia = dow === 0 ? 0.45 : (dow === 6 ? 0.78 : 1);
+      var tendencia = 0.82 + (i / total) * 0.36;
+      var personas = futuro ? 0
+        : Math.max(3, Math.round(ajustes.mensajesDia * factorDia * tendencia * (0.75 + rnd() * 0.5)));
+
+      /* Cierre ~4%, centrado con variación de día para que el total no dependa
+         de una racha de mala suerte. */
+      var varia = 0.65 + rnd() * 0.7;
+
+      /* Las ventas son enteras, pero a 18 mensajes al día el cierre esperado es 0,7:
+         redondear cada día por separado hundía el escenario sin agente y exageraba
+         la pérdida. Arrastramos el resto de un día al siguiente, así la proporción
+         a largo plazo es la real y se conserva que unos días no se vende nada. */
+      var esperadas = personas * 0.04 * varia;
+      restoCon += esperadas;
+      var ventas = futuro ? 0 : Math.floor(restoCon);
+      restoCon -= ventas;
+
+      /* De dónde sale cada mensaje del día. Sábado y domingo entran enteros en
+         "fin de semana": no hay horario que valga. */
+      var esFinde = (dow === 0 || dow === 6);
+      var msgFinde   = esFinde ? personas : 0;
+      var msgNoche   = esFinde ? 0 : Math.round(personas * SIN_AGENTE.nocheEntreSemana);
+      var msgHorario = personas - msgFinde - msgNoche;
+
+      /* Sin agente, a estos no los atiendes a tiempo. */
+      var sinAtenderNoche   = msgNoche   * (1 - SIN_AGENTE.rescatados);
+      var sinAtenderFinde   = msgFinde   * (1 - SIN_AGENTE.rescatados);
+      var sinAtenderOcupado = msgHorario * SIN_AGENTE.ocupado * (1 - SIN_AGENTE.rescatados);
+      var sinAtender = sinAtenderNoche + sinAtenderFinde + sinAtenderOcupado;
+
+      /* Cierras al mismo ritmo sobre la gente que SÍ alcanzas: por eso los ingresos
+         sin agente escalan con el alcance. Derivarlo así (en vez de tirar ventas
+         aparte) evita que el redondeo a bajo volumen exagere la pérdida: la
+         proporción sale igual con 15 mensajes al día que con 80. */
+      var alcance = personas > 0 ? (personas - sinAtender) / personas : 1;
+
+      var precioVenta = function(){
+        /* El ticket manda; la dispersión imita la mezcla de kits del catálogo.
+           Redondeado a cien mil: así se lee como una cotización, no como ruido. */
+        return Math.round(ajustes.ticketMedio * (0.68 + rnd() * 0.62) / 100000) * 100000;
+      };
+
+      var ingresos = 0;
+      for(var s = 0; s < ventas; s++) ingresos += precioVenta();
+
+      var ingresosSin = Math.round(ingresos * alcance);
+
+      var nVisitas = futuro
+        ? (dow === 0 ? 0 : Math.round(rnd() * 3))
+        : Math.max(0, Math.round(personas * 0.05 * (0.6 + rnd())));
+
+      var visitas = [];
+      for(var w = 0; w < nVisitas; w++){
+        var hora = 8 + Math.floor(rnd() * 9);
+        visitas.push({
+          nombre:  NOMBRES[Math.floor(rnd() * NOMBRES.length)],
+          negocio: NEGOCIOS[Math.floor(rnd() * NEGOCIOS.length)],
+          valor:   precioVenta(),
+          hora:    pad2(hora) + ":" + (rnd() < 0.5 ? "00" : "30")
+        });
+      }
+      /* Mismo arrastre que en las ventas, y por el mismo motivo: con ~1 visita al
+         día, redondear cada día por separado dejaba casi todos a cero y hundía el
+         escenario sin agente muy por debajo del 30% que declara SIN_AGENTE.visitas. */
+      restoVis += nVisitas * SIN_AGENTE.visitas;
+      var visitasSin = Math.floor(restoVis);
+      restoVis -= visitasSin;
+
+      /* Una sola cifra de pérdida por día, redondeada, y las tres causas suman
+         exactamente eso. El escenario sin agente se deriva de ella, así que el
+         desglose, la tarjeta roja y la línea gris no pueden discrepar nunca. */
+      var cien = function(n){ return Math.round(n / 100000) * 100000; };
+      var perdidoDia = cien(Math.max(0, ingresos - ingresosSin));
+
+      var pNoche = 0, pFinde = 0, pOcupado = 0;
+      if(perdidoDia > 0 && sinAtender > 0){
+        pNoche   = cien(perdidoDia * (sinAtenderNoche / sinAtender));
+        pFinde   = cien(perdidoDia * (sinAtenderFinde / sinAtender));
+        pOcupado = perdidoDia - pNoche - pFinde;      /* absorbe el resto */
+        if(pOcupado < 0){
+          pOcupado = 0;
+          pFinde = Math.max(0, perdidoDia - pNoche);
+          pNoche = perdidoDia - pFinde;
+        }
+      }
+      ingresosSin = ingresos - perdidoDia;
+
+      var dia = {
+        key: dayKey(fecha), date: fecha, futuro: futuro, finde: esFinde,
+        msgNoche: msgNoche, msgFinde: msgFinde, msgHorario: msgHorario,
+        sinAtender: Math.round(sinAtender),
+        perdidoNoche: pNoche, perdidoFinde: pFinde, perdidoOcupado: pOcupado,
+        personas: personas,
+        recuperados: futuro ? 0 : Math.max(0, ventas - Math.round(ventas * alcance)),
+        ventas: ventas,      ventasSin: Math.round(ventas * alcance),
+        ingresos: ingresos,  ingresosSin: ingresosSin,
+        respuesta: 4 + Math.round(rnd() * 5),
+        visitas: visitas,    visitasSin: visitasSin
+      };
+      out.push(dia);
+      porDia[dia.key] = dia;
+    }
+    return out;
+  }
+
+  historia = generarHistoria();   /* se necesita antes que cualquier render */
+
+  /* Un lead recuperado en vivo entra en el histórico de hoy, que es lo que miran
+     los indicadores. Ya había escrito — por eso `personas` no se toca — pero sin
+     el agente no habría comprado: suben los ingresos y `ingresosSin` no, así que
+     la pérdida evitada crece con él. La causa que la explica es la hora a la que
+     escribió, de noche, y hay que nombrarla para que las tres causas sigan
+     sumando exactamente la tarjeta roja. */
+  function sumarRecuperadoAHoy(lead, precio){
+    var reg = porDia[dayKey(HOY)];
+    if(!reg) return;
+    reg.ventas      += 1;
+    reg.ingresos    += precio;
+    reg.recuperados += 1;
+    if(reg.finde) reg.perdidoFinde += precio; else reg.perdidoNoche += precio;
+    /* Sin agente esta visita no existe, así que `visitasSin` se queda como estaba. */
+    reg.visitas.push({ nombre:lead.name, negocio:lead.business, valor:precio, hora:"09:00" });
+  }
+
+  function aplicarRecuperacionesEnVivo(){
+    recuperadosEnVivo.forEach(function(r){
+      var l = leads.filter(function(x){ return x.id === r.leadId; })[0];
+      if(l) sumarRecuperadoAHoy(l, r.monto);
+    });
+  }
+
+  /* ============ Periodo seleccionado ============ */
+
+  var rango = { tipo:"dias", dias:30, fecha:null };
+
+  function diasDelRango(){
+    if(rango.tipo === "fecha"){
+      var d = porDia[rango.fecha];
+      return d ? [d] : [];
+    }
+    var desde = addDays(HOY, -(rango.dias - 1));
+    return historia.filter(function(d){ return !d.futuro && d.date >= desde && d.date <= HOY; });
+  }
+
+  function etiquetaRango(){
+    if(rango.tipo === "fecha"){
+      var d = porDia[rango.fecha];
+      return d ? d.date.toLocaleDateString("es-CO", { day:"numeric", month:"long", year:"numeric" }) : "Sin datos";
+    }
+    if(rango.dias === 1) return "Hoy";
+    return "Últimos " + rango.dias + " días";
+  }
+
   /* ============ Estadísticas ============ */
 
   var lastStats = {};
 
-  function computeCerrados(){
-    return leads.filter(function(l){ return l.estado === "comprado" || l.estado === "recuperado"; });
-  }
-  function computePipeline(){
-    return leads.filter(function(l){ return l.estado === "visita"; });
-  }
-  function sumValor(list){
-    return list.reduce(function(a,l){ return a + (valorDe(l) || 0); }, 0);
-  }
-  function avgReply(){
-    var withReply = leads.filter(function(l){ return typeof l.respuesta === "number"; });
-    if(!withReply.length) return null;
-    var sum = withReply.reduce(function(a,l){ return a + l.respuesta; }, 0);
-    return Math.round(sum / withReply.length);
+  /* Una cifra que sube cuenta mejor que una que aparece: al apagar el agente se
+     ve caer el dinero en vez de encontrarlo ya caido. Sin punto de partida (la
+     primera pintada) o sin animaciones, escribe el valor y ya. */
+  var animando = {};
+  function animaCifra(id, desde, hasta){
+    var el = document.getElementById(id);
+    if(!el) return;
+    if(animando[id]){ cancelAnimationFrame(animando[id]); delete animando[id]; }
+    if(reduce || desde === undefined || desde === hasta){
+      el.textContent = formatCOP(hasta); return;
+    }
+    var t0 = 0, dur = 520;
+    function paso(ts){
+      if(!t0) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.textContent = formatCOP(desde + (hasta - desde) * e);
+      if(k < 1) animando[id] = requestAnimationFrame(paso);
+      else { delete animando[id]; el.textContent = formatCOP(hasta); }
+    }
+    animando[id] = requestAnimationFrame(paso);
   }
 
   function renderStats(){
-    var recovered = leads.filter(function(l){ return l.estado === "recuperado"; }).length;
-    var revenue   = sumValor(computeCerrados());
-    var pipeline  = sumValor(computePipeline());
-    var reply     = avgReply();
+    var dias = diasDelRango();
 
-    var next = { recovered:recovered, revenue:revenue, pipeline:pipeline };
+    var revenueOn  = dias.reduce(function(a,d){ return a + d.ingresos; }, 0);
+    var revenueOff = dias.reduce(function(a,d){ return a + d.ingresosSin; }, 0);
+    var perdido    = revenueOn - revenueOff;
 
-    document.getElementById("statReply").textContent     = reply === null ? "—" : reply + " s";
-    document.getElementById("recoveredValue").textContent = recovered;
-    document.getElementById("revenueValue").textContent   = formatCOP(revenue);
-    document.getElementById("pipelineValue").textContent  = formatCOP(pipeline);
+    var visitasOn  = dias.reduce(function(a,d){ return a + d.visitas.length; }, 0);
+    var visitasOff = dias.reduce(function(a,d){ return a + d.visitasSin; }, 0);
+    var valorVisOn = dias.reduce(function(a,d){
+      return a + d.visitas.reduce(function(b,v){ return b + v.valor; }, 0);
+    }, 0);
+    var valorVisOff = visitasOn
+      ? Math.round(valorVisOn * (visitasOff / visitasOn) / 100000) * 100000
+      : 0;
+
+    var recuperados = dias.reduce(function(a,d){ return a + d.recuperados; }, 0);
+    var recuperadosVis = agenteOn ? recuperados : 0;
+    var reply = dias.length
+      ? Math.round(dias.reduce(function(a,d){ return a + d.respuesta; }, 0) / dias.length)
+      : null;
+
+    /* Con el agente apagado, el panel enseña el otro escenario entero. */
+    var revenue  = agenteOn ? revenueOn  : revenueOff;
+    var visitas  = agenteOn ? visitasOn  : visitasOff;
+    var valorVis = agenteOn ? valorVisOn : valorVisOff;
+
+    var next = { revenue:revenue, visitas:visitas, valorVis:valorVis, perdido:perdido,
+                 recuperados:recuperadosVis };
+
+    document.getElementById("statReply").textContent =
+      agenteOn ? (reply === null ? "—" : reply + " s") : "11 h";
+    document.getElementById("recoveredValue").textContent = recuperadosVis;
+    animaCifra("revenueValue",  lastStats.revenue,  revenue);
+    animaCifra("pipelineValue", lastStats.valorVis, valorVis);
+    animaCifra("lostValue",     lastStats.perdido,  perdido);
+
+    document.getElementById("hintPipeline").textContent =
+      visitas + (visitas === 1 ? " visita agendada" : " visitas agendadas");
+    var tc = document.getElementById("tabCalN");
+    if(tc) tc.textContent = visitas;
+    document.getElementById("hintLost").textContent = agenteOn
+      ? "Es lo que recuperaste contestando a tiempo"
+      : "Esto es lo que estarías dejando ir";
 
     /* Sólo animamos lo que de verdad cambió. */
-    [["statRecovered","recovered"],["statRevenue","revenue"],["statPipeline","pipeline"]].forEach(function(pair){
+    [["statRevenue","revenue"],["statPipeline","valorVis"],["statLost","perdido"],
+     ["statRecovered","recuperados"]].forEach(function(pair){
       if(lastStats[pair[1]] !== undefined && lastStats[pair[1]] !== next[pair[1]]){
-        var el = document.getElementById(pair[0]);
-        el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+        var el2 = document.getElementById(pair[0]);
+        el2.classList.remove("bump"); void el2.offsetWidth; el2.classList.add("bump");
       }
     });
     lastStats = next;
   }
+
+  /* ============ Gráfica ============ */
+  /* SVG a mano: la CSP del sitio no permite CDN, así que no hay librería de gráficos.
+     Dos paneles apilados que comparten el eje X — nunca un doble eje Y, porque alinear
+     dos escalas distintas inventa una correlación que no está en los datos. */
+
+  var chartPendiente = false;
+  var SVGNS  = "http://www.w3.org/2000/svg";
+  var AZUL   = "#0C5FA8";   /* pasos validados con el comprobador de paleta */
+  var VERDE  = "#138363";
+  var GRIS   = "#94A6B8";   /* contexto, no serie: el escenario sin agente */
+  var agenteOn = true;
+  var M      = { top:14, right:16, bottom:24, left:52 };
+  var ALTO   = 132;
+  var puntos = [];          /* serie actual, compartida por gráfica, tabla y tooltip */
+  var yaAnimado = false;
+
+  function el(name, attrs){
+    var n = document.createElementNS(SVGNS, name);
+    for(var k in attrs){ if(attrs[k] !== null && attrs[k] !== undefined) n.setAttribute(k, attrs[k]); }
+    return n;
+  }
+
+  /* Hasta 31 días se pinta día a día; más allá, por semanas, para no amontonar puntos. */
+  function serieDelRango(){
+    var dias = diasDelRango();
+    if(!dias.length) return [];
+    if(dias.length <= 31){
+      return dias.map(function(d){
+        return {
+          etiqueta: cortaFecha(d.date),
+          larga:    d.date.toLocaleDateString("es-CO", { weekday:"long", day:"numeric", month:"long" }),
+          personas: d.personas, ingresos: d.ingresos,
+          personasSin: d.personas,          /* los mensajes entran igual; lo que cambia es el después */
+          ingresosSin: d.ingresosSin,
+          finde: d.finde, sinAtender: d.sinAtender,
+          msgNoche: d.msgNoche, msgFinde: d.msgFinde, msgHorario: d.msgHorario,
+          perdidoNoche: d.perdidoNoche, perdidoFinde: d.perdidoFinde, perdidoOcupado: d.perdidoOcupado
+        };
+      });
+    }
+    var grupos = [];
+    for(var i = 0; i < dias.length; i += 7){
+      var trozo = dias.slice(i, i + 7);
+      var ini = trozo[0].date, fin = trozo[trozo.length - 1].date;
+      grupos.push({
+        etiqueta: cortaFecha(ini),
+        larga:    "Semana del " + ini.toLocaleDateString("es-CO", { day:"numeric", month:"long" }) +
+                  " al " + fin.toLocaleDateString("es-CO", { day:"numeric", month:"long" }),
+        personas: trozo.reduce(function(a,d){ return a + d.personas; }, 0),
+        ingresos: trozo.reduce(function(a,d){ return a + d.ingresos; }, 0),
+        personasSin: trozo.reduce(function(a,d){ return a + d.personas; }, 0),
+        ingresosSin: trozo.reduce(function(a,d){ return a + d.ingresosSin; }, 0),
+        finde: false, semana: true,
+        sinAtender:     trozo.reduce(function(a,d){ return a + d.sinAtender; }, 0),
+        msgNoche:       trozo.reduce(function(a,d){ return a + d.msgNoche; }, 0),
+        msgFinde:       trozo.reduce(function(a,d){ return a + d.msgFinde; }, 0),
+        msgHorario:     trozo.reduce(function(a,d){ return a + d.msgHorario; }, 0),
+        perdidoNoche:   trozo.reduce(function(a,d){ return a + d.perdidoNoche; }, 0),
+        perdidoFinde:   trozo.reduce(function(a,d){ return a + d.perdidoFinde; }, 0),
+        perdidoOcupado: trozo.reduce(function(a,d){ return a + d.perdidoOcupado; }, 0)
+      });
+    }
+    return grupos;
+  }
+
+  /* "13 ago" en vez de "13 de ago": el "de" solo roba ancho en el eje. */
+  function cortaFecha(d){
+    return d.toLocaleDateString("es-CO", { day:"numeric", month:"short" })
+            .replace(" de ", " ").replace(".", "");
+  }
+
+  function abreviaCOP(n){
+    if(n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1).replace(".", ",") + "M";
+    if(n >= 1000) return "$" + Math.round(n / 1000) + "k";
+    return "$" + n;
+  }
+
+  function dibujaPanel(svg, datos, campo, campoSin, color, formateaY, animar){
+    var ancho = svg.clientWidth || svg.parentNode.clientWidth || 640;
+    svg.setAttribute("viewBox", "0 0 " + ancho + " " + ALTO);
+    svg.setAttribute("height", ALTO);
+    while(svg.childNodes.length > 1) svg.removeChild(svg.lastChild);   /* conserva el <title> */
+
+    if(!datos.length) return;
+
+    var w = ancho - M.left - M.right;
+    var h = ALTO - M.top - M.bottom;
+    var max = Math.max.apply(null, datos.map(function(d){ return Math.max(d[campo], d[campoSin]); }));
+    if(max <= 0) max = 1;
+    max = max * 1.15;
+
+    var px = function(i){ return M.left + (datos.length === 1 ? w / 2 : (i / (datos.length - 1)) * w); };
+    var py = function(v){ return M.top + h - (v / max) * h; };
+
+    /* Sábados y domingos marcados: la línea gris se despega justo ahí, y verlo
+       coincidir es más elocuente que cualquier explicación. */
+    if(datos.length > 1 && datos.some(function(d){ return d.finde; })){
+      var medio = (px(1) - px(0)) / 2;
+      datos.forEach(function(d, i){
+        if(!d.finde) return;
+        svg.appendChild(el("rect", {
+          x: px(i) - medio, y: M.top, width: medio * 2, height: h, class:"band-finde"
+        }));
+      });
+    }
+
+    /* Rejilla y eje Y: líneas de pelo sólidas, nunca discontinuas. */
+    [0, 0.5, 1].forEach(function(t){
+      var v = max * t, y = py(v);
+      svg.appendChild(el("line", { x1:M.left, y1:y, x2:M.left + w, y2:y, class:"grid-line" }));
+      var tx = el("text", { x:M.left - 8, y:y + 4, class:"axis-text", "text-anchor":"end" });
+      tx.textContent = formateaY(v);
+      svg.appendChild(tx);
+    });
+
+    /* Cuántas marcas caben de verdad en este ancho: en móvil son muchas menos
+       que en escritorio, y con un número fijo se solapaban. */
+    var cabe = Math.max(2, Math.min(8, Math.floor(w / 58)));
+    var paso = Math.max(1, Math.ceil(datos.length / cabe));
+    var ultimoIdx = datos.length - 1;
+    datos.forEach(function(d, i){
+      var enPaso = (i % paso === 0);
+      /* El último siempre interesa, pero solo si no va a pisar a la marca anterior. */
+      var esUltimo = (i === ultimoIdx) && (ultimoIdx % paso) >= paso / 2;
+      if(!enPaso && !esUltimo) return;
+      if(enPaso && i !== ultimoIdx && (ultimoIdx - i) < paso / 2) return;
+      var tx = el("text", { x:px(i), y:ALTO - 6, class:"axis-text", "text-anchor":"middle" });
+      tx.textContent = d.etiqueta;
+      svg.appendChild(tx);
+    });
+
+    var linea = datos.map(function(d, i){ return (i ? "L" : "M") + px(i) + " " + py(d[campo]); }).join(" ");
+
+    var grad = el("linearGradient", { id:"g-" + campo, x1:"0", y1:"0", x2:"0", y2:"1" });
+    grad.appendChild(el("stop", { offset:"0%",   "stop-color":color, "stop-opacity":".22" }));
+    grad.appendChild(el("stop", { offset:"100%", "stop-color":color, "stop-opacity":"0" }));
+    var defs = el("defs", {}); defs.appendChild(grad); svg.appendChild(defs);
+
+    svg.appendChild(el("path", {
+      d: linea + " L" + px(datos.length - 1) + " " + (M.top + h) + " L" + px(0) + " " + (M.top + h) + " Z",
+      fill: "url(#g-" + campo + ")"
+    }));
+
+    /* Fantasma "sin agente" y, entre las dos, el hueco: eso es lo que se pierde.
+       Gris de contexto, nunca un color de serie: la atención va a la línea buena. */
+    var hayHueco = datos.some(function(d){ return d[campoSin] < d[campo]; });
+    if(hayHueco){
+      var lineaSin = datos.map(function(d, i){ return (i ? "L" : "M") + px(i) + " " + py(d[campoSin]); }).join(" ");
+      var vuelta = datos.slice().reverse().map(function(d, j){
+        var i = datos.length - 1 - j;
+        return "L" + px(i) + " " + py(d[campo]);
+      }).join(" ");
+      svg.appendChild(el("path", { d: lineaSin + " " + vuelta + " Z", class:"gap-fill" }));
+      svg.appendChild(el("path", { d: lineaSin, class:"ghost-line" }));
+
+      /* Una sola etiqueta, donde el hueco es mayor: nunca un número en cada punto. */
+      var fin = datos.length - 1;
+      var dif = datos[fin][campo] - datos[fin][campoSin];
+      if(dif > 0 && datos.length > 1){
+        var gl = el("text", {
+          x: px(fin) - 8,
+          y: (py(datos[fin][campoSin]) + py(datos[fin][campo])) / 2 + 4,
+          class:"gap-label", "text-anchor":"end"
+        });
+        gl.textContent = "−" + formateaY(dif);
+        svg.appendChild(gl);
+      }
+    }
+
+    var trazo = el("path", { d:linea, class:"series-line", stroke:color });
+    svg.appendChild(trazo);
+    if(animar && !yaAnimado && trazo.getTotalLength){
+      var len = trazo.getTotalLength();
+      trazo.style.setProperty("--len", len);
+      trazo.classList.add("draw");
+    }
+
+    /* Etiqueta directa sólo en el último punto: nunca un número en cada dato. */
+    var ultimo = datos.length - 1;
+    svg.appendChild(el("circle", { cx:px(ultimo), cy:py(datos[ultimo][campo]), r:4.5, fill:color, class:"end-dot" }));
+    var lbl = el("text", {
+      x: px(ultimo) - (ultimo === 0 ? 0 : 8), y: py(datos[ultimo][campo]) - 12,
+      class:"end-label", "text-anchor": ultimo === 0 ? "middle" : "end"
+    });
+    lbl.textContent = formateaY(datos[ultimo][campo]);
+    svg.appendChild(lbl);
+
+    /* Capa de seguimiento: cruz y punto resaltado. */
+    var cross = el("line", { y1:M.top, y2:M.top + h, class:"crosshair", visibility:"hidden" });
+    var dot   = el("circle", { r:5, fill:color, class:"hover-dot", visibility:"hidden" });
+    svg.appendChild(cross); svg.appendChild(dot);
+    svg._cross = cross; svg._dot = dot; svg._px = px; svg._py = py; svg._campo = campo;
+  }
+
+  function renderChart(animar){
+    puntos = serieDelRango();
+
+    /* El dinero se muestra acumulado: día a día era un zigzag que cruzaba la línea
+       fantasma sin parar. Acumulado, el hueco entre ambas se ensancha a lo largo del
+       periodo y se lee de un vistazo lo que se queda por el camino. */
+    var acc = 0, accSin = 0;
+    puntos.forEach(function(p){
+      acc += p.ingresos;  accSin += p.ingresosSin;
+      p.acum = acc;       p.acumSin = accSin;
+    });
+    document.getElementById("chartRange").textContent = etiquetaRango();
+
+    /* En una pestana oculta el SVG mide cero y saldrian trazados sin sentido.
+       Se anota que quedo pendiente y se dibuja al mostrarla. */
+    if(!document.getElementById("plotLeads").getBoundingClientRect().width){
+      chartPendiente = true;
+      renderWhy(); renderTable();
+      return;
+    }
+    chartPendiente = false;
+
+    var cLeads = agenteOn ? AZUL  : GRIS;
+    var cMoney = agenteOn ? VERDE : GRIS;
+    dibujaPanel(document.getElementById("plotLeads"), puntos, "personas", "personasSin", cLeads,
+                function(v){ return Math.round(v).toLocaleString("es-CO"); }, animar);
+    dibujaPanel(document.getElementById("plotMoney"), puntos,
+                agenteOn ? "acum" : "acumSin", "acumSin", cMoney, abreviaCOP, animar);
+    if(animar) yaAnimado = true;
+    renderWhy();
+    renderTable();
+  }
+
+  /* Cada peso perdido, con su causa y su cifra. Sin esto, la línea gris solo dice
+     "se perdió" — que es justo lo que no convence a nadie. */
+  function renderWhy(){
+    var dias = diasDelRango();
+    var noche   = dias.reduce(function(a,d){ return a + d.perdidoNoche; }, 0);
+    var finde   = dias.reduce(function(a,d){ return a + d.perdidoFinde; }, 0);
+    var ocupado = dias.reduce(function(a,d){ return a + d.perdidoOcupado; }, 0);
+    var total   = noche + finde + ocupado;
+
+    var msgNoche   = dias.reduce(function(a,d){ return a + d.msgNoche; }, 0);
+    var msgFinde   = dias.reduce(function(a,d){ return a + d.msgFinde; }, 0);
+    var msgHorario = dias.reduce(function(a,d){ return a + d.msgHorario; }, 0);
+    var findes     = dias.filter(function(d){ return d.finde; }).length;
+
+    var lista = document.getElementById("whyList");
+    lista.innerHTML = "";
+    document.getElementById("whyTitle").textContent =
+      total > 0 ? "Por qué se va ese dinero" : "Sin pérdidas en este periodo";
+
+    if(total <= 0){
+      document.getElementById("whyFoot").textContent = "";
+      return;
+    }
+
+    [{ causa:CAUSAS.noche,   monto:noche,
+       detalle: msgNoche.toLocaleString("es-CO") + " mensajes entraron después de cerrar. " +
+                "Sin nadie al otro lado, esperan a la mañana siguiente — y muchos ya no están." },
+     { causa:CAUSAS.finde,   monto:finde,
+       detalle: msgFinde.toLocaleString("es-CO") + " mensajes llegaron en " + findes +
+                (findes === 1 ? " día de fin de semana" : " días de fin de semana") +
+                ". Hasta el lunes no los ve nadie: son hasta 48 horas de silencio." },
+     { causa:CAUSAS.ocupado, monto:ocupado,
+       detalle: "De los " + msgHorario.toLocaleString("es-CO") + " que entraron en horario, " +
+                "una parte te pilla en un tejado o con un cliente. Contestas, pero tarde." }]
+    .sort(function(a,b){ return b.monto - a.monto; })
+    .forEach(function(it){
+      if(it.monto <= 0) return;
+      var li = document.createElement("li");
+
+      var c = document.createElement("span"); c.className = "cause"; c.textContent = it.causa;
+      var m = document.createElement("span"); m.className = "amount";
+      m.textContent = formatCOP(it.monto) + " · " + Math.round(it.monto / total * 100) + "%";
+
+      var track = document.createElement("span"); track.className = "track";
+      var bar = document.createElement("i");
+      bar.style.width = Math.max(2, Math.round(it.monto / total * 100)) + "%";
+      track.appendChild(bar);
+
+      var d = document.createElement("span"); d.className = "detail"; d.textContent = it.detalle;
+
+      li.appendChild(c); li.appendChild(m); li.appendChild(track); li.appendChild(d);
+      lista.appendChild(li);
+    });
+
+    document.getElementById("whyFoot").textContent =
+      "Suma " + formatCOP(total) + " en " + etiquetaRango().toLowerCase() +
+      ". El agente no vende mejor que tú: simplemente está despierto cuando tú no.";
+  }
+
+  function renderTable(){
+    var body = document.getElementById("dataBody");
+    body.innerHTML = "";
+    puntos.forEach(function(p){
+      var tr = document.createElement("tr");
+      [p.larga, p.personas.toLocaleString("es-CO"), formatCOP(p.ingresos)].forEach(function(v, i){
+        var cel = document.createElement(i === 0 ? "th" : "td");
+        if(i === 0) cel.setAttribute("scope", "row");
+        cel.textContent = v;              /* textContent, nunca innerHTML */
+        tr.appendChild(cel);
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  /* ============ Cruz y tooltip ============ */
+
+  var tip = document.getElementById("tip");
+  var chartCard = document.querySelector(".chart-card");
+
+  function indiceCercano(svg, clientX){
+    var caja = svg.getBoundingClientRect();
+    var escala = (svg.viewBox.baseVal.width || caja.width) / caja.width;
+    var x = (clientX - caja.left) * escala;
+    var mejor = 0, dist = Infinity;
+    puntos.forEach(function(p, i){
+      var d = Math.abs(svg._px(i) - x);
+      if(d < dist){ dist = d; mejor = i; }
+    });
+    return mejor;
+  }
+
+  function muestraTip(i, clientX, clientY){
+    var p = puntos[i];
+    if(!p) return;
+    tip.innerHTML = "";
+
+    var when = document.createElement("div");
+    when.className = "when";
+    when.textContent = p.larga;
+    tip.appendChild(when);
+
+    /* La segunda fila lee lo mismo que dibuja el panel: acumulado, no el día suelto. */
+    var filas = [[agenteOn ? AZUL : GRIS, p.personas.toLocaleString("es-CO"), "clientes ese día"],
+                 [agenteOn ? VERDE : GRIS,
+                  formatCOP(agenteOn ? p.acum : p.acumSin), "acumulado"]];
+    if(agenteOn && p.acumSin < p.acum){
+      filas.push([GRIS, formatCOP(p.acum - p.acumSin), "perdidos hasta aquí"]);
+    }
+    filas.forEach(function(r){
+      var row = document.createElement("div");
+      row.className = "row";
+      var key = document.createElement("i");
+      key.style.background = r[0];
+      var b = document.createElement("b"); b.textContent = r[1];
+      var s = document.createElement("span"); s.textContent = r[2];
+      row.appendChild(key); row.appendChild(b); row.appendChild(s);
+      tip.appendChild(row);
+    });
+
+    /* Por qué ese día concreto se pierde. Se muestra aunque ese día no se cerrara
+       nada: un sábado sin contestar es el caso más elocuente de todos. */
+    if(agenteOn && p.sinAtender > 0){
+      var texto;
+      if(p.finde){
+        var diaSem = p.larga.split(",")[0];
+        texto = "Era " + diaSem + ": " + p.msgFinde + " mensajes esperando al lunes.";
+      } else if(p.semana){
+        texto = p.msgNoche + " entraron de noche y " + p.msgFinde + " en fin de semana.";
+      } else {
+        texto = p.msgNoche + " de esos " + p.personas + " entraron después de cerrar.";
+      }
+      var perdidoP = p.perdidoNoche + p.perdidoFinde + p.perdidoOcupado;
+      if(perdidoP > 0) texto += " Se fueron " + formatCOP(perdidoP) + ".";
+
+      var nota = document.createElement("div");
+      nota.className = "tip-why";
+      nota.textContent = texto;
+      tip.appendChild(nota);
+    }
+
+    [document.getElementById("plotLeads"), document.getElementById("plotMoney")].forEach(function(svg){
+      if(!svg._cross) return;
+      var x = svg._px(i);
+      svg._cross.setAttribute("x1", x); svg._cross.setAttribute("x2", x);
+      svg._cross.setAttribute("visibility", "visible");
+      svg._dot.setAttribute("cx", x);
+      svg._dot.setAttribute("cy", svg._py(p[svg._campo]));
+      svg._dot.setAttribute("visibility", "visible");
+    });
+
+    var cardBox = chartCard.getBoundingClientRect();
+    var leadsBox = document.getElementById("plotLeads").getBoundingClientRect();
+    tip.hidden = false;
+    var izq = (clientX !== null && clientX !== undefined)
+      ? clientX - cardBox.left
+      : (leadsBox.left - cardBox.left) + (document.getElementById("plotLeads")._px(i) /
+        (document.getElementById("plotLeads").viewBox.baseVal.width || 1)) * leadsBox.width;
+    tip.style.left = Math.max(80, Math.min(cardBox.width - 80, izq)) + "px";
+
+    /* Sigue al puntero y se voltea hacia abajo si no cabe por arriba. Antes se
+       anclaba al borde del primer panel, lo que daba por hecho que la tarjeta
+       tenía cabecera propia: al sacarla, el tooltip se salía por arriba. */
+    var alto  = tip.offsetHeight;
+    var ancla = (clientY !== null && clientY !== undefined)
+      ? clientY - cardBox.top
+      : (leadsBox.bottom - cardBox.top);
+    if(ancla - alto - 10 >= 0){
+      tip.classList.remove("below");
+      tip.style.top = Math.min(cardBox.height, ancla - 10) + "px";
+    } else {
+      tip.classList.add("below");
+      tip.style.top = Math.max(0, ancla + 18) + "px";
+    }
+  }
+
+  function ocultaTip(){
+    tip.hidden = true;
+    [document.getElementById("plotLeads"), document.getElementById("plotMoney")].forEach(function(svg){
+      if(!svg._cross) return;
+      svg._cross.setAttribute("visibility", "hidden");
+      svg._dot.setAttribute("visibility", "hidden");
+    });
+  }
+
+  [document.getElementById("plotLeads"), document.getElementById("plotMoney")].forEach(function(svg){
+    svg.addEventListener("pointermove", function(e){
+      if(!puntos.length) return;
+      muestraTip(indiceCercano(svg, e.clientX), e.clientX, e.clientY);
+    });
+    svg.addEventListener("pointerleave", ocultaTip);
+  });
+
+  /* Mismo detalle con teclado que con ratón. */
+  var focoIdx = 0;
+  chartCard.addEventListener("keydown", function(e){
+    if(!puntos.length) return;
+    if(e.key === "ArrowRight" || e.key === "ArrowLeft"){
+      e.preventDefault();
+      focoIdx = Math.max(0, Math.min(puntos.length - 1, focoIdx + (e.key === "ArrowRight" ? 1 : -1)));
+      muestraTip(focoIdx, null, null);
+    } else if(e.key === "Escape"){ ocultaTip(); }
+  });
+
+  /* ============ Calendario ============ */
+
+  var MESES = ["enero","febrero","marzo","abril","mayo","junio",
+               "julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  var DOW = ["L","M","X","J","V","S","D"];
+  var calRef = new Date(HOY.getFullYear(), HOY.getMonth(), 1);
+  var calSel = null;
+
+  function nivel(n){
+    if(!n) return "none";
+    if(n === 1) return "s1";
+    if(n === 2) return "s2";
+    if(n === 3) return "s3";
+    if(n === 4) return "s4";
+    return "s5";
+  }
+
+  function renderCalendar(devolverFocoA){
+    var grid = document.getElementById("calGrid");
+    grid.innerHTML = "";
+    document.getElementById("calMonth").textContent = MESES[calRef.getMonth()] + " " + calRef.getFullYear();
+
+    DOW.forEach(function(d){
+      var c = document.createElement("div");
+      c.className = "cal-dow";
+      c.textContent = d;
+      grid.appendChild(c);
+    });
+
+    var primero = new Date(calRef.getFullYear(), calRef.getMonth(), 1);
+    var hueco = (primero.getDay() + 6) % 7;           /* la semana empieza en lunes */
+    var ultimo = new Date(calRef.getFullYear(), calRef.getMonth() + 1, 0).getDate();
+
+    for(var i = 0; i < hueco; i++){
+      var v = document.createElement("div");
+      v.className = "cal-day empty";
+      grid.appendChild(v);
+    }
+
+    for(var d = 1; d <= ultimo; d++){
+      (function(dia){
+        var fecha = new Date(calRef.getFullYear(), calRef.getMonth(), dia);
+        var reg = porDia[dayKey(fecha)];
+        var n = reg ? (agenteOn ? reg.visitas.length : reg.visitasSin) : 0;
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "cal-day " + nivel(n) + (n ? " has" : "") +
+                      (dayKey(fecha) === dayKey(HOY) ? " today" : "");
+        b.setAttribute("aria-pressed", calSel === dayKey(fecha) ? "true" : "false");
+        b.setAttribute("data-key", dayKey(fecha));
+        b.setAttribute("aria-label", dia + " de " + MESES[calRef.getMonth()] + ": " +
+                       (n === 0 ? "sin visitas" : n === 1 ? "1 visita agendada" : n + " visitas agendadas"));
+        var num = document.createElement("span");
+        num.className = "n"; num.textContent = dia;
+        b.appendChild(num);
+        if(n){
+          var q = document.createElement("span");
+          q.className = "v"; q.textContent = n;
+          b.appendChild(q);
+        }
+        b.addEventListener("click", function(){
+          calSel = (calSel === dayKey(fecha)) ? null : dayKey(fecha);
+          /* La rejilla se reconstruye, así que hay que devolver el foco al mismo día. */
+          renderCalendar(dayKey(fecha));
+        });
+        grid.appendChild(b);
+      })(d);
+    }
+
+    if(devolverFocoA){
+      var vuelve = grid.querySelector('[data-key="' + devolverFocoA + '"]');
+      if(vuelve) vuelve.focus();
+    }
+    renderCalDetail();
+  }
+
+  function renderCalDetail(){
+    var box = document.getElementById("calDetail");
+    box.innerHTML = "";
+    var reg = calSel ? porDia[calSel] : null;
+
+    if(!calSel){
+      var mes = historia.filter(function(d){
+        return d.date.getMonth() === calRef.getMonth() && d.date.getFullYear() === calRef.getFullYear();
+      });
+      var tot = mes.reduce(function(a,d){ return a + (agenteOn ? d.visitas.length : d.visitasSin); }, 0);
+      var val = mes.reduce(function(a,d){
+        var t = d.visitas.reduce(function(b,v){ return b + v.valor; }, 0);
+        return a + (agenteOn ? t : Math.round(t * (d.visitas.length ? d.visitasSin / d.visitas.length : 0)));
+      }, 0);
+      var p = document.createElement("p");
+      p.className = "none";
+      p.textContent = tot + (tot === 1 ? " visita agendada este mes, " : " visitas agendadas este mes, ") +
+                      formatCOP(val) + " en juego. Toca un día para ver quién.";
+      box.appendChild(p);
+      return;
+    }
+
+    var h3 = document.createElement("h3");
+    h3.textContent = reg
+      ? reg.date.toLocaleDateString("es-CO", { weekday:"long", day:"numeric", month:"long" })
+      : "Sin datos";
+    box.appendChild(h3);
+
+    if(!reg || !(agenteOn ? reg.visitas.length : reg.visitasSin)){
+      var vacio = document.createElement("p");
+      vacio.className = "none";
+      vacio.textContent = "Ninguna visita agendada este día.";
+      box.appendChild(vacio);
+      return;
+    }
+
+    var ul = document.createElement("ul");
+    var lista = agenteOn ? reg.visitas : reg.visitas.slice(0, reg.visitasSin);
+    lista.forEach(function(v){
+      var li = document.createElement("li");
+      var izq = document.createElement("b");
+      izq.textContent = v.nombre + (v.negocio ? " · " + v.negocio : "");
+      var der = document.createElement("span");
+      der.textContent = v.hora + " · visita técnica · " + formatCOP(v.valor);
+      li.appendChild(izq); li.appendChild(der);
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  }
+
+  document.getElementById("calPrev").addEventListener("click", function(){
+    calRef = new Date(calRef.getFullYear(), calRef.getMonth() - 1, 1);
+    calSel = null; renderCalendar();
+  });
+  document.getElementById("calNext").addEventListener("click", function(){
+    calRef = new Date(calRef.getFullYear(), calRef.getMonth() + 1, 1);
+    calSel = null; renderCalendar();
+  });
 
   /* ============ Tarjetas ============ */
 
@@ -535,16 +2152,33 @@
   }
 
   function leadCardHTML(l){
-    var st  = STATUS[l.estado];
-    var rec = kitRecomendado(l);
+    var st = STATUS[l.estado];
 
-    var kitBlock = l.kit
-      ? '<span class="lead-field full">' +
-          '<span class="k">Kit elegido</span>' +
-          '<span class="v">' + esc(KITS[l.kit].name) + '</span>' +
-          '<span class="kit-desc">' + esc(KITS[l.kit].partes.join(" · ")) + '</span>' +
-        '</span>'
-      : field("Kit elegido", "Aún no ha elegido", "full", "muted");
+    /* Quien ya tiene sistema instalado no necesita que le recomienden un kit:
+       necesita saber qué le cabe encima. La ficha cambia de campos, no de forma. */
+    var cabecera, kitBlock, valorLab;
+    if(esAmplia(l)){
+      var amp = AMPLIA[l.intencion];
+      cabecera = field("Sistema instalado", KITS[l.kitInstalado].short) +
+                 field("Ubicación", l.lugar);
+      kitBlock = '<span class="lead-field full">' +
+                   '<span class="k">Ampliación que pidió</span>' +
+                   '<span class="v">' + esc(piezaAmplia(l.intencion, l.cantidad)) + '</span>' +
+                   '<span class="kit-desc">' + esc(amp.gancho) + '</span>' +
+                 '</span>';
+      valorLab = "Valor de la ampliación";
+    } else {
+      cabecera = field("Paquete recomendado", KITS[kitRecomendado(l)].short) +
+                 field("Lugar instalación", l.lugar);
+      kitBlock = l.kit
+        ? '<span class="lead-field full">' +
+            '<span class="k">Kit elegido</span>' +
+            '<span class="v">' + esc(KITS[l.kit].name) + '</span>' +
+            '<span class="kit-desc">' + esc(KITS[l.kit].partes.join(" · ")) + '</span>' +
+          '</span>'
+        : field("Kit elegido", "Aún no ha elegido", "full", "muted");
+      valorLab = "Valor del kit";
+    }
 
     var foot = l.estado === "curiosidad"
       ? '<span class="lead-foot">Se enfrió. Toca para recuperarlo.</span>'
@@ -565,21 +2199,51 @@
           '<span class="badge ' + st.cls + '">' + esc(st.label) + '</span>' +
         '</span>' +
         '<span class="lead-grid">' +
-          field("Paquete recomendado", KITS[rec].short) +
-          field("Lugar instalación", l.lugar) +
-          field("Gasto mensual informado", consumoDisplay(l), "full") +
+          cabecera +
+          field(esAmplia(l) ? "Situación" : "Gasto mensual informado", consumoDisplay(l), "full") +
           kitBlock +
-          field("Valor del kit", formatCOP(valorDe(l))) +
+          field(valorLab, formatCOP(valorDe(l))) +
         '</span>' +
         foot +
       '</button>'
     );
   }
 
+  /* El dolor, en una linea sobre la lista: cuantos se enfriaron y que vale eso.
+     Cuando no queda ninguno, la misma barra cambia de tono y lo celebra. */
+  function renderConvAlert(){
+    var barra = document.getElementById("convAlert");
+    if(!barra) return;
+    var frios = leads.filter(function(l){ return l.estado === "curiosidad"; });
+    var enJuego = frios.reduce(function(a, l){ return a + valorEnJuego(l); }, 0);
+    var chip = document.getElementById("tabConvN");
+    if(chip){
+      chip.textContent = frios.length ? frios.length : leads.length;
+      chip.className = "n" + (frios.length ? " hot" : "");
+    }
+    if(frios.length){
+      barra.className = "alertbar";
+      barra.innerHTML =
+        '<span class="pulse" aria-hidden="true"></span>' +
+        '<span><b>' + frios.length + (frios.length === 1 ? ' persona se enfri\u00f3' : ' personas se enfriaron') + '</b></span>' +
+        '<span class="sep" aria-hidden="true">\u00b7</span>' +
+        '<span><b>' + esc(formatCOP(enJuego)) + '</b> en juego</span>' +
+        '<span class="tail">Toca su tarjeta y mira lo que hace el agente</span>';
+    } else {
+      barra.className = "alertbar ok";
+      barra.innerHTML =
+        '<span class="pulse" aria-hidden="true"></span>' +
+        '<span><b>Nadie se qued\u00f3 sin respuesta</b></span>' +
+        '<span class="tail">Las ' + leads.length + ' conversaciones de anoche, atendidas</span>';
+    }
+  }
+
   function renderLeads(){
     var list = document.getElementById("leadsList");
     list.innerHTML = leads.map(leadCardHTML).join("");
-    document.getElementById("leadsCount").textContent = leads.length + " en total";
+    document.getElementById("leadsCount").textContent =
+      leads.length + (leads.length === 1 ? " persona" : " personas");
+    renderConvAlert();
     Array.prototype.forEach.call(list.querySelectorAll(".lead-card"), function(card){
       card.addEventListener("click", function(){ openChat(card.getAttribute("data-id")); });
     });
@@ -596,7 +2260,6 @@
   var chatPanel   = document.getElementById("chatPanel");
   var chatBody    = document.getElementById("chatBody");
   var chatChoices = document.getElementById("chatChoices");
-  var layoutEl    = document.getElementById("layout");
   var lastTrigger = null;
   var clock = null;
 
@@ -643,14 +2306,24 @@
   function bubbleHTML(who, text, time){
     var t = esc(text).replace(/\*(.+?)\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
     return '<div class="bubble ' + who + '">' + t +
-           '<span class="time">' + esc(time) + (who === "bot" ? " ✓✓" : "") + '</span></div>';
+           '<span class="time">' + esc(time) +
+           (who === "bot" ? ' <span class="tick" aria-label="Leído">✓✓</span>' : "") +
+           '</span></div>';
   }
 
   function appendBubble(who, text, time){
     var stick = nearBottom();
     var row = document.createElement("div");
-    row.className = "bubble-row " + who;
-    row.innerHTML = bubbleHTML(who, text, time);
+    if(who === "kits"){
+      row.className = "bubble-row bot";
+      row.innerHTML = kitsCardHTML(currentLead || leads[0]);
+    } else if(who === "quote"){
+      row.className = "bubble-row bot";
+      row.innerHTML = quoteCardHTML(currentLead || leads[0], parseInt(text, 10) || null);
+    } else {
+      row.className = "bubble-row " + who;
+      row.innerHTML = bubbleHTML(who, text, time);
+    }
     chatBody.appendChild(row);
     maybeScroll(stick);
   }
@@ -668,9 +2341,11 @@
     typingRow.className = "typing-row";
     typingRow.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
     chatBody.appendChild(typingRow);
+    subEstado("escribiendo…", true);
     maybeScroll(stick);
 
     return sleep(850).then(function(){
+      subEstado("en línea", false);
       /* Se retira siempre, aunque la conversación se haya cancelado: no deja nodos huérfanos. */
       if(typingRow.parentNode) typingRow.remove();
       if(token !== runToken) return;
@@ -679,24 +2354,91 @@
     });
   }
 
-  function kitsMenu(lead){
+  /* Las tres opciones, como ficha y no como parrafo. Un muro de texto en un chat
+     no lo lee nadie, y menos en una llamada de venta: se ve el precio, se ve cual
+     recomienda el agente y se decide. El detalle fino va en la visita tecnica. */
+  function kitsCardHTML(lead){
     var rec = recomendarKit(lead.billCOP);
-    var lineas = [1,2,3].map(function(k){
+    var filas = [1,2,3].map(function(k){
       var kit = KITS[k];
-      return "*" + kit.name + "* · " + formatCOP(kit.precio) + "\n" +
-             kit.partes.map(function(p){ return "• " + p; }).join("\n") + "\n" + kit.desc;
-    }).join("\n\n");
-    return "Listo. Estas son las tres opciones, con tus precios de hoy:\n\n" + lineas +
-           "\n\nEl equipo exacto se ajusta a tu sitio, pero esta es la base." +
-           ((rec && rec.nota) ? "\n\n" + rec.nota : "") +
-           "\n\n¿Cuál te gustaría agendar para la visita técnica?";
+      var esRec = rec && rec.kit === k;
+      return '<div class="kitrow' + (esRec ? ' rec' : '') + '">' +
+               '<span class="kn">' + esc(kit.short) + ' \u00b7 ' + esc(kit.name.split("\u2014")[1].trim()) +
+                 (esRec ? '<span class="tag">Para tu consumo</span>' : '') + '</span>' +
+               '<span class="kp">' + esc(formatCOP(kit.precio)) + '</span>' +
+               '<span class="kd">' + esc(kit.desc) + '</span>' +
+             '</div>';
+    }).join("");
+    return '<div class="kitcard">' + filas +
+           '<div class="kitfoot">El equipo exacto se ajusta a tu sitio. Esta es la base.' +
+           ((rec && rec.nota) ? ' ' + esc(rec.nota) : '') + '</div></div>';
+  }
+
+  /* La cotización de una ampliación, en ficha: unidad, cantidad y total. Mismo
+     criterio que la ficha de kits — el precio se ve, no se busca en un párrafo. */
+  function quoteCardHTML(lead, n){
+    var amp = AMPLIA[lead.intencion];
+    var cant = n || lead.cantidad;
+    return '<div class="kitcard">' +
+             '<div class="kitrow rec">' +
+               '<span class="kn">' + esc(piezaAmplia(lead.intencion, cant)) + '</span>' +
+               '<span class="kp">' + esc(formatCOP(precioAmplia(lead.intencion, cant))) + '</span>' +
+               '<span class="kd">' + esc(formatCOP(amp.precio)) + ' cada una \u00b7 sobre tu ' +
+                 esc(KITS[lead.kitInstalado].short) + ' ya instalado</span>' +
+             '</div>' +
+             '<div class="kitfoot">Incluye montaje y puesta en marcha. En la visita validamos ' +
+               esc(amp.cierre) + '.</div>' +
+           '</div>';
   }
 
   /* Devuelve la conversación completa que corresponde a las respuestas dadas. */
   function buildScript(lead, a){
+    if(esAmplia(lead)) return buildScriptAmplia(lead, a);
+    return buildScriptKit(lead, a);
+  }
+
+  /* Quien ya es cliente no repite el cuestionario entero: sabe lo que tiene y
+     viene a por una pieza concreta. La conversación es más corta a propósito. */
+  function buildScriptAmplia(lead, a){
+    var name = firstName(lead.name);
+    var amp  = AMPLIA[lead.intencion];
+    var esPan = lead.intencion === "paneles";
+    var acts = [
+      { t:"c", text:lead.apertura },
+      { t:"b", text:"\u00a1Hola " + name + "! Claro que s\u00ed. Sobre tu *" + KITS[lead.kitInstalado].short +
+                    "* se puede. " + amp.gancho },
+      { t:"b", text:esPan
+          ? "\u00bfCu\u00e1ntos paneles est\u00e1s pensando sumar?"
+          : "\u00bfCu\u00e1nto respaldo quieres a\u00f1adir?" },
+      { t:"ask", key:"cuantos", options:amp.opciones.map(function(n){
+          return { label:piezaCorta(lead.intencion, n), value:n };
+        }) }
+    ];
+
+    if(a.cuantos){
+      acts.push({ t:"c", text:"Con " + piezaCorta(lead.intencion, a.cuantos) + " me sirve" });
+      acts.push({ t:"b", text:"Perfecto. Esta es la cotizaci\u00f3n con tus precios de hoy:" });
+      acts.push({ t:"quote", cuantos:a.cuantos });
+      acts.push({ t:"b", text:"\u00bfTe agendo la visita t\u00e9cnica para dejarlo montado?" });
+      acts.push({ t:"ask", key:"cierre", options:[
+          { label:"S\u00ed, ag\u00e9ndame la visita", value:"ok" }
+        ] });
+    }
+
+    if(a.cierre){
+      acts.push({ t:"c", text:"Listo, ag\u00e9ndame" });
+      acts.push({ t:"b", text:"\u00a1Hecho, " + name + "! Queda agendada la visita para ampliar tu *" +
+                              KITS[lead.kitInstalado].short + "* con " + piezaAmplia(lead.intencion, a.cuantos) +
+                              ". En las pr\u00f3ximas horas te contactamos para coordinar la fecha." });
+      acts.push({ t:"result", amplia:{ tipo:lead.intencion, cuantos:a.cuantos } });
+    }
+    return acts;
+  }
+
+  function buildScriptKit(lead, a){
     var name = firstName(lead.name);
     var acts = [
-      { t:"c", text:"Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar?" },
+      { t:"c", text:lead.apertura },
       { t:"b", text:"¡Hola " + name + "! Con gusto. Para armarte una recomendación a la medida, " +
                     "¿tienes a la mano tu recibo de luz?" },
       { t:"ask", key:"consumo", options:[
@@ -727,7 +2469,9 @@
 
     if(a.lugar){
       acts.push({ t:"c", text:"En el " + a.lugar.toLowerCase() });
-      acts.push({ t:"b", text:kitsMenu(lead) });
+      acts.push({ t:"b", text:"Listo. Estas son las tres opciones, con tus precios de hoy:" });
+      acts.push({ t:"kits" });
+      acts.push({ t:"b", text:"\u00bfCu\u00e1l te gustar\u00eda agendar para la visita t\u00e9cnica?" });
       acts.push({ t:"ask", key:"kit", options:[
           { label:KITS[1].short, value:1 }, { label:KITS[2].short, value:2 }, { label:KITS[3].short, value:3 }
         ] });
@@ -750,6 +2494,10 @@
     buildScript(lead, a).forEach(function(A){
       if(A.t === "c" || A.t === "b"){
         out.push({ who:A.t === "c" ? "client" : "bot", text:A.text, time:nextTime() });
+      } else if(A.t === "kits"){
+        out.push({ who:"kits", text:"" });
+      } else if(A.t === "quote"){
+        out.push({ who:"quote", text:String(A.cuantos) });
       }
     });
     return out;
@@ -801,8 +2549,17 @@
         if(answers[A.key] === undefined){ rendered = i; renderChoices(token, A); return Promise.resolve(); }
         i += 1; rendered = i; return step();
       }
+      if(A.t === "kits"){
+        appendBubble("kits", "", "");
+        i += 1; rendered = i; return sleep(450).then(step);
+      }
+      if(A.t === "quote"){
+        appendBubble("quote", String(A.cuantos), "");
+        i += 1; rendered = i; return sleep(450).then(step);
+      }
       if(A.t === "result"){
-        showResultCard(token, lead, A.kit, A.lugar);
+        if(A.amplia) showResultAmplia(token, lead, A.amplia.cuantos);
+        else showResultCard(token, lead, A.kit, A.lugar);
         i += 1; rendered = i; renderChoices(token, null); return Promise.resolve();
       }
       return (A.t === "c" ? addClient(token, A.text) : addBot(token, A.text)).then(function(){
@@ -819,7 +2576,7 @@
     confirmed = false;
     runToken += 1;
     var token = runToken;
-    chatBody.innerHTML = "";
+    limpiarChat();
     chatChoices.innerHTML = "";
     startClock(currentLead.hora);
     rendered = 0;
@@ -834,28 +2591,82 @@
     var div = document.createElement("div");
     div.className = "result-card";
     div.innerHTML =
-      '<h4>Resultado de la conversación</h4>' +
-      '<p>Visita técnica agendada · <b>' + esc(KITS[kit].name) + '</b> · ' + esc(formatCOP(precio)) +
-      ' · instalación en ' + esc(lugar.toLowerCase()) + '</p>' +
+      '<h4>Visita t\u00e9cnica agendada</h4>' +
+      '<div class="result-kit">' +
+        '<span class="k">' + esc(KITS[kit].name) + '</span>' +
+        '<span class="v">' + esc(formatCOP(precio)) + '</span>' +
+      '</div>' +
+      '<p>Instalaci\u00f3n en ' + esc(lugar.toLowerCase()) + ' \u00b7 sin que tuvieras que contestar</p>' +
       '<button class="confirm-btn" type="button">Confirmar y actualizar panel</button>';
     chatBody.appendChild(div);
     maybeScroll(true);
     div.querySelector("button").addEventListener("click", function(){
       confirmRecovery(lead.id, kit);
-      div.innerHTML = '<div class="confirmed-msg">Cliente recuperado — panel actualizado</div>';
+      div.className = "syschip good";
+      div.innerHTML = '<span>\u2714 Cliente recuperado \u00b7 el panel de arriba ya lo cuenta</span>';
+      maybeScroll(true);
     });
   }
 
-  function confirmRecovery(leadId, kit){
+  /* `cuantos` sólo viene en las ampliaciones; en un kit nuevo manda `kit`. El
+     resto del recorrido es idéntico: una venta más y una visita más en el día de
+     hoy, por el importe que sea. */
+  function showResultAmplia(token, lead, cuantos){
+    if(token !== runToken) return;
+    var precio = precioAmplia(lead.intencion, cuantos);
+    var div = document.createElement("div");
+    div.className = "result-card";
+    div.innerHTML =
+      '<h4>Visita t\u00e9cnica agendada</h4>' +
+      '<div class="result-kit">' +
+        '<span class="k">' + esc(piezaAmplia(lead.intencion, cuantos)) + '</span>' +
+        '<span class="v">' + esc(formatCOP(precio)) + '</span>' +
+      '</div>' +
+      '<p>Ampliaci\u00f3n sobre su ' + esc(KITS[lead.kitInstalado].short) +
+        ' \u00b7 sin que tuvieras que contestar</p>' +
+      '<button class="confirm-btn" type="button">Confirmar y actualizar panel</button>';
+    chatBody.appendChild(div);
+    maybeScroll(true);
+    div.querySelector("button").addEventListener("click", function(){
+      confirmRecovery(lead.id, null, cuantos);
+      div.className = "syschip good";
+      div.innerHTML = '<span>\u2714 Cliente recuperado \u00b7 el panel de arriba ya lo cuenta</span>';
+      maybeScroll(true);
+    });
+  }
+
+  function confirmRecovery(leadId, kit, cuantos){
     var l = leads.filter(function(x){ return x.id === leadId; })[0];
     if(!l) return;
     /* Guardamos la conversación tal y como quedó, para poder releerla al reabrir. */
     transcripts[leadId] = scriptToMessages(l, answers);
     confirmed = true;
     chatChoices.innerHTML = "";
-    l.kit = kit;
+
+    var precio;
+    if(cuantos){
+      l.cantidad = cuantos;
+      l.cerrado  = true;
+      precio = precioAmplia(l.intencion, cuantos);
+    } else {
+      l.kit = kit;
+      precio = KITS[kit].precio;
+    }
     l.estado = "recuperado";
+    /* La insignia de la cabecera cuenta lo mismo que la tarjeta: pasa a Recuperado. */
+    pintaInsignia(l);
+    /* El botón promete actualizar el panel: que lo actualice. */
+    recuperadosEnVivo.push({ leadId:leadId, kit:kit, cuantos:cuantos, monto:precio });
+    sumarRecuperadoAHoy(l, precio);
     renderAll();
+    renderChart(false);
+    renderCalendar();
+
+    /* Que se vea de donde sale el movimiento del marcador. */
+    mostrarDelta("statRecovered", "+1 ahora");
+    mostrarDelta("statRevenue",   "+" + formatCOP(precio) + " ahora");
+    mostrarDelta("statPipeline",  "+1 visita");
+    mostrarDelta("statLost",      "+" + formatCOP(precio) + " rescatados", true);
     var card = document.getElementById("card-" + leadId);
     if(card){
       card.classList.add("flash");
@@ -863,8 +2674,25 @@
     }
   }
 
+  function buildRecapAmplia(lead){
+    var amp = AMPLIA[lead.intencion];
+    var msgs = [
+      { who:"client", text:lead.apertura },
+      { who:"bot", text:"\u00a1Hola " + firstName(lead.name) + "! Claro que s\u00ed. Sobre tu *" +
+          KITS[lead.kitInstalado].short + "* se puede. " + amp.gancho },
+      { who:"client", text:"Con " + piezaCorta(lead.intencion, lead.cantidad) + " me sirve" },
+      { who:"bot", text:"Perfecto. Esta es la cotizaci\u00f3n con tus precios de hoy:" },
+      { who:"quote", text:String(lead.cantidad) }
+    ];
+    msgs.push({ who:"bot", text:lead.estado === "comprado"
+      ? "Confirmado. Gracias, quedamos atentos al montaje."
+      : "Queda agendada la visita para dejarlo montado." });
+    return msgs;
+  }
+
   /* Recuento estático para quien ya fue atendido: la tarjeta deja de estar muerta. */
   function buildRecap(lead){
+    if(esAmplia(lead)) return buildRecapAmplia(lead);
     var kit = lead.kit ? KITS[lead.kit] : null;
     var msgs = [
       { who:"client", text:"Buenas, quiero información sobre paneles solares" +
@@ -879,8 +2707,8 @@
       { who:"client", text:"En el " + lead.lugar.toLowerCase() }
     ];
     if(kit){
-      msgs.push({ who:"bot", text:"Para tu caso recomiendo el *" + kit.name + "* · " + formatCOP(kit.precio) +
-                                  "\n" + kit.partes.map(function(p){ return "• " + p; }).join("\n") });
+      msgs.push({ who:"bot", text:"Para tu caso recomiendo el *" + kit.name + "* \u00b7 " + formatCOP(kit.precio) });
+      msgs.push({ who:"kits", text:"" });
       msgs.push({ who:"client", text:"Me sirve. Agendemos la visita." });
     } else {
       msgs.push({ who:"bot", text:"Te paso las opciones y agendamos una visita cuando quieras." });
@@ -891,9 +2719,15 @@
     return msgs;
   }
 
+  /* Cada apertura empieza por la marca de dia, como en WhatsApp: situa la
+     conversacion en el tiempo antes de la primera burbuja. */
+  function limpiarChat(){
+    chatBody.innerHTML = '<div class="daychip"><span>Anoche</span></div>';
+  }
+
   function renderStatic(msgs, canReplay, lead){
     startClock(lead.hora);
-    chatBody.innerHTML = "";
+    limpiarChat();
     msgs.forEach(function(m){
       appendBubble(m.who, m.text, m.time || nextTime());
     });
@@ -907,6 +2741,39 @@
     maybeScroll(true);
   }
 
+  /* ---- Cabecera viva: el agente escribe, y se nota ---- */
+  var chatSub = document.getElementById("chatSub");
+  function subEstado(texto, vivo){
+    if(!chatSub) return;
+    chatSub.textContent = texto;
+    chatSub.classList.toggle("live", !!vivo);
+  }
+  function pintaInsignia(lead){
+    var st = STATUS[lead.estado];
+    var b = document.getElementById("chatBadge");
+    if(b && st){ b.className = "badge " + st.cls; b.textContent = st.label; }
+    var w = document.getElementById("chatWhen");
+    if(w) w.textContent = "escribi\u00f3 a las " + lead.hora;
+  }
+
+  /* ---- Chips de delta: lo que acaba de cambiar, junto a su etiqueta ----
+     Van en la etiqueta y no en el valor porque el valor se reescribe entero
+     al recalcular, y se llevaria el chip por delante. */
+  var deltaPend = null;
+  function mostrarDelta(cardId, texto, malo){
+    var card = document.getElementById(cardId);
+    if(!card) return;
+    var lab = card.querySelector(".label");
+    if(!lab) return;
+    var viejo = lab.querySelector(".delta");
+    if(viejo) viejo.remove();
+    var chip = document.createElement("span");
+    chip.className = "delta" + (malo ? " warn" : "");
+    chip.textContent = texto;
+    lab.appendChild(chip);
+    setTimeout(function(){ if(chip.parentNode) chip.remove(); }, 9000);
+  }
+
   function openChat(leadId){
     var lead = leads.filter(function(l){ return l.id === leadId; })[0];
     if(!lead) return;
@@ -916,17 +2783,22 @@
     runToken += 1;
     var token = runToken;
 
-    chatBody.innerHTML = "";
+    limpiarChat();
     chatChoices.innerHTML = "";
     document.getElementById("chatAvatar").textContent = initials(lead.name);
     document.getElementById("chatName").textContent = lead.name;
+    pintaInsignia(lead);
+    subEstado("en línea", false);
     startClock(lead.hora);
 
     chatPanel.style.display = "flex";
     void chatPanel.offsetWidth;
     chatPanel.classList.add("open");
-    layoutEl.classList.add("with-chat");
-    if(window.matchMedia("(max-width: 61.1875rem)").matches) document.body.classList.add("locked");
+    document.body.classList.add("chat-open");
+    if(mqCompact.matches) document.body.classList.add("locked");
+    /* Con el cajon abierto lo que importa es ver moverse el marcador: lo
+       subimos a la vista en vez de dejarlo donde estuviera la rueda. */
+    if(!mqCompact.matches) window.scrollTo({ top:0, behavior: reduce ? "auto" : "smooth" });
 
     renderLeads();
     chatPanel.focus();
@@ -948,7 +2820,7 @@
     var lead = leads.filter(function(l){ return l.id === leadId; })[0];
     if(!lead) return;
     runToken += 1;
-    chatBody.innerHTML = "";
+    limpiarChat();
     chatChoices.innerHTML = "";
     startClock(lead.hora);
     resetScriptState();
@@ -961,8 +2833,8 @@
     runToken += 1;
     activeLeadId = null;
     chatPanel.classList.remove("open");
-    layoutEl.classList.remove("with-chat");
     document.body.classList.remove("locked");
+    document.body.classList.remove("chat-open");
     setTimeout(function(){ if(!activeLeadId) chatPanel.style.display = "none"; }, 250);
     renderLeads();
     save();
@@ -973,6 +2845,7 @@
     }
   }
 
+  document.getElementById("scrim").addEventListener("click", closeChat);
   document.getElementById("chatClose").addEventListener("click", closeChat);
   document.getElementById("chatBack").addEventListener("click", closeChat);
 
@@ -980,7 +2853,7 @@
   /* Al cruzar el umbral, el chat pasa de panel lateral a pantalla completa. Sin esto,
      rotar el dispositivo con el chat abierto lo hacía deslizarse de golpe y, peor,
      dejaba el scroll del body bloqueado al volver a escritorio. */
-  var mqCompact = window.matchMedia("(max-width: 61.1875rem)");
+  var mqCompact = window.matchMedia("(max-width: 47.9375rem)");
 
   function syncViewport(){
     var estabaAbajo = nearBottom();
@@ -1023,15 +2896,163 @@
     transcripts = {};
     lastStats = {};
     clearStore();
+    /* El histórico lleva dentro los leads recuperados en vivo: se regenera entero.
+       La semilla es la misma, así que sale exactamente el panel del arranque. */
+    recuperadosEnVivo = [];
+    historia = generarHistoria();
+    calSel = null;
     runToken += 1;
     closeChat();
+    ocultaTip();
     renderAll();
+    renderChart(false);
+    renderCalendar();
+  });
+
+  /* ---- Filtro de periodo: manda sobre indicadores y gráfica a la vez ---- */
+
+  function marcaRango(activo){
+    Array.prototype.forEach.call(document.querySelectorAll("[data-range]"), function(b){
+      b.setAttribute("aria-pressed", b === activo ? "true" : "false");
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-range]"), function(btn){
+    btn.addEventListener("click", function(){
+      rango = { tipo:"dias", dias:parseInt(btn.getAttribute("data-range"), 10), fecha:null };
+      document.getElementById("pickDate").value = "";
+      marcaRango(btn);
+      ocultaTip();
+      renderStats();
+      renderChart(false);
+    });
+  });
+
+  var pick = document.getElementById("pickDate");
+  pick.min = historia.length ? historia[0].key : dayKey(HOY);
+  pick.max = dayKey(HOY);
+  pick.addEventListener("change", function(){
+    if(!pick.value) return;
+    rango = { tipo:"fecha", dias:1, fecha:pick.value };
+    marcaRango(null);
+    ocultaTip();
+    renderStats();
+    renderChart(false);
+  });
+
+  document.getElementById("toggleTable").addEventListener("click", function(){
+    var tabla = document.getElementById("dataTable");
+    var abierta = !tabla.hidden;
+    tabla.hidden = abierta;
+    this.setAttribute("aria-expanded", abierta ? "false" : "true");
+    this.textContent = abierta ? "Ver datos" : "Ocultar datos";
+  });
+
+  /* La gráfica se redibuja al cambiar el ancho, porque el SVG se mide en píxeles. */
+  var reflow;
+  window.addEventListener("resize", function(){
+    clearTimeout(reflow);
+    reflow = setTimeout(function(){ ocultaTip(); renderChart(false); }, 150);
+  });
+
+  /* ---- Interruptor: apagar el agente y ver el otro escenario ---- */
+
+  var killBtn = document.getElementById("killBtn");
+  killBtn.addEventListener("click", function(){
+    agenteOn = !agenteOn;
+    killBtn.setAttribute("aria-pressed", agenteOn ? "false" : "true");
+    document.getElementById("killLabel").textContent = agenteOn ? "Apagar el agente" : "Encender el agente";
+    document.body.classList.toggle("sin-agente", !agenteOn);
+    ocultaTip();
+    renderStats();
+    renderChart(false);
+    renderCalendar();
+  });
+
+  /* ---- Calculadora: los números del visitante, no los míos ---- */
+
+  var inMsg = document.getElementById("inMsg");
+  var inTicket = document.getElementById("inTicket");
+
+  function aplicaAjustes(){
+    var m = parseInt(inMsg.value, 10);
+    var t = parseInt(soloDigitos(inTicket.value), 10);
+    if(!isFinite(m) || m < 1) m = 1;
+    if(m > 200) m = 200;
+    if(!isFinite(t) || t < 500000) t = 500000;
+    if(t > 200000000) t = 200000000;
+    ajustes.mensajesDia = m;
+    ajustes.ticketMedio = t;
+    inMsg.value = m;
+    inTicket.value = formatCOP(t);
+    historia = generarHistoria();
+    aplicarRecuperacionesEnVivo();
+    calSel = null;
+    lastStats = {};
+    ocultaTip();
+    renderStats();
+    renderChart(false);
+    renderCalendar();
+  }
+
+  inMsg.addEventListener("change", aplicaAjustes);
+  inTicket.addEventListener("change", aplicaAjustes);
+  /* Se edita en crudo y se lee formateado: así no hay que pelear con el cursor
+     mientras el visitante teclea su cifra en pantalla compartida. */
+  inTicket.addEventListener("focus", function(){ inTicket.value = soloDigitos(inTicket.value); });
+  inTicket.addEventListener("blur",  function(){ aplicaAjustes(); });
+  document.getElementById("resetTune").addEventListener("click", function(){
+    inMsg.value = 18;
+    inTicket.value = String(TICKET_BASE);
+    aplicaAjustes();
   });
 
   /* ============ Arranque ============ */
 
+  /* ============ Pestanas ============
+     Tres vistas, una a la vez. Las que llevan medidas (grafica y calendario) se
+     redibujan al mostrarse: mientras estaban ocultas median cero. */
+  var tabsBtns = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var primeraGrafica = true;
+
+  function mostrarTab(nombre){
+    tabsBtns.forEach(function(b){
+      var suyo = b.getAttribute("data-tab") === nombre;
+      b.setAttribute("aria-selected", suyo ? "true" : "false");
+      b.tabIndex = suyo ? 0 : -1;
+      var panel = document.getElementById(b.getAttribute("aria-controls"));
+      if(panel) panel.hidden = !suyo;
+    });
+    ocultaTip();
+    if(nombre === "graf"){
+      renderChart(primeraGrafica && !reduce);
+      primeraGrafica = false;
+    } else if(nombre === "cal"){
+      renderCalendar();
+    }
+  }
+
+  tabsBtns.forEach(function(b){
+    b.addEventListener("click", function(){ mostrarTab(b.getAttribute("data-tab")); });
+    b.addEventListener("keydown", function(e){
+      var i = tabsBtns.indexOf(b), j = null;
+      if(e.key === "ArrowRight") j = (i + 1) % tabsBtns.length;
+      else if(e.key === "ArrowLeft") j = (i - 1 + tabsBtns.length) % tabsBtns.length;
+      else if(e.key === "Home") j = 0;
+      else if(e.key === "End") j = tabsBtns.length - 1;
+      if(j === null) return;
+      e.preventDefault();
+      mostrarTab(tabsBtns[j].getAttribute("data-tab"));
+      tabsBtns[j].focus();
+    });
+  });
+
+  inTicket.value = formatCOP(TICKET_BASE);
   restore();
+  aplicarRecuperacionesEnVivo();   /* tras un F5, el panel vuelve como estaba */
   renderAll();
+  renderCalendar();
+  mostrarTab("conv");
 })();
 </script>
 </body>
