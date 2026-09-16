@@ -222,27 +222,110 @@
   @keyframes bump-wide{0%{transform:scale(1);}30%{transform:scale(1.008);}100%{transform:scale(1);}}
 
   /* ---------------- Layout ---------------- */
-  .leads{display:grid;grid-template-columns:1fr;gap:.875rem;}
-  @media(min-width:44rem){ .leads{grid-template-columns:1fr 1fr;} }
-  /* Con el cajon abierto queda menos ancho: la lista vuelve a una columna. */
-  @media(min-width:75rem){ body.chat-open .leads{grid-template-columns:1fr;} }
-
-  /* ---------------- Lead cards ---------------- */
-  .lead-card{
-    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-card);
-    padding:1.125rem;width:100%;text-align:left;color:inherit;
-    display:block;transition:border-color .18s ease,box-shadow .18s ease;
+  /* ---------------- Lista de conversaciones ----------------
+     Una tarjeta grande por persona funcionaba con cinco; con doce hay que rodar
+     la rueda para contarlas. En fila se barren de un vistazo y se comparan por
+     columna, y el detalle completo sigue ahí: se abre dentro de la propia fila. */
+  .leads{
+    --cols:9rem minmax(10rem,1.15fr) minmax(9rem,1.35fr) 7.5rem 1.25rem;
+    display:block;background:var(--paper);border:1px solid var(--line);
+    border-radius:var(--r-card);overflow:hidden;
   }
-  .lead-card:hover{border-color:var(--navy-soft);box-shadow:0 .375rem 1.25rem -.5rem rgba(6,42,80,.18);}
-  .lead-card[aria-current="true"]{border-color:var(--green);box-shadow:0 0 0 1px var(--green);}
-  .lead-card.flash{animation:flash 1.1s ease;}
+  .leads-head{
+    display:grid;grid-template-columns:var(--cols);gap:.875rem;
+    align-items:center;padding:.5rem 1rem;background:var(--mist);
+    border-bottom:1px solid var(--line);
+    font-size:.6875rem;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .leads-head .h-val{text-align:right;}
+  .lead-row{border-bottom:1px solid var(--line);position:relative;}
+  .lead-row:last-child{border-bottom:none;}
+  .lead-row.flash{animation:flash 1.1s ease;}
   @keyframes flash{
-    0%{box-shadow:0 0 0 0 rgba(19,131,99,0);}
-    25%{box-shadow:0 0 0 .375rem rgba(19,131,99,.2);}
-    100%{box-shadow:0 0 0 0 rgba(19,131,99,0);}
+    0%{background:rgba(19,131,99,0);}
+    25%{background:rgba(19,131,99,.13);}
+    100%{background:rgba(19,131,99,0);}
   }
-  .lead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.625rem;margin-bottom:.875rem;}
-  .lead-id{display:flex;align-items:center;gap:.625rem;min-width:0;}
+  .lead-row[aria-current="true"]{background:var(--green-pale);}
+  .lead-row[aria-current="true"]::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);
+  }
+
+  .lead-main{
+    display:grid;grid-template-columns:var(--cols);gap:.875rem;align-items:center;
+    width:100%;padding:.75rem 1rem;background:none;border:none;text-align:left;
+    color:inherit;transition:background .15s ease;
+  }
+  .lead-main:hover{background:var(--mist);}
+  .lead-row[aria-current="true"] .lead-main:hover{background:transparent;}
+  .lead-cli{display:flex;align-items:center;gap:.625rem;min-width:0;}
+  .lead-pide{min-width:0;}
+  .pide-v{
+    display:block;font-size:.875rem;font-weight:700;line-height:1.25;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .pide-k{
+    display:block;font-size:.75rem;color:var(--muted);font-weight:500;line-height:1.3;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .lead-val{text-align:right;font-size:.9375rem;font-weight:800;letter-spacing:-0.02em;}
+  .lead-val .en-juego{
+    display:block;font-size:.6875rem;font-weight:600;color:var(--red-ink);
+    letter-spacing:0;text-transform:none;
+  }
+  .lead-val.riesgo{color:var(--red-ink);}
+  .chev{
+    justify-self:center;color:var(--muted);font-size:.6875rem;line-height:1;
+    transition:transform .18s ease;
+  }
+  .lead-main[aria-expanded="true"] .chev{transform:rotate(180deg);}
+
+  /* La acción vive fuera del botón que despliega: son dos cosas distintas y no
+     pueden anidarse. Se posiciona sobre la columna del valor, a la derecha. */
+  .lead-go{
+    position:absolute;right:1rem;top:.6875rem;
+    font-weight:700;font-size:.8125rem;padding:.4375rem .875rem;border-radius:999px;
+    border:1.5px solid var(--line);background:var(--paper);color:var(--navy);
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .lead-go:hover{border-color:var(--navy);}
+  .lead-go.hot{background:var(--green);border-color:var(--green);color:#fff;}
+  .lead-go.hot:hover{background:var(--green-bright);border-color:var(--green-bright);}
+  /* Sitio para el botón: la fila reserva su carril a la derecha. */
+  .leads{--go:7.5rem;}
+  .lead-main{padding-right:calc(var(--go) + 1rem);}
+  .leads-head{padding-right:calc(var(--go) + 1rem);}
+
+  .lead-detail{
+    padding:0 1rem .875rem calc(1rem + 3.125rem);
+    border-top:1px dashed var(--line);margin-top:-1px;
+  }
+  .lead-detail[hidden]{display:none;}
+  .lead-detail .lead-grid{padding-top:.75rem;gap:.625rem 1.25rem;}
+  /* A dos columnas el detalle deja medio panel en blanco: los campos cortos
+     caben de tres en tres y los largos siguen ocupando la fila entera. */
+  @media(min-width:60rem){
+    .lead-detail .lead-grid{grid-template-columns:repeat(3,1fr);}
+  }
+  .lead-detail .lead-foot{margin-top:.75rem;padding-top:.625rem;}
+
+  /* En estrecho las columnas no caben: cada fila se apila y el botón baja. */
+  @media(max-width:60rem){
+    .leads-head{display:none;}
+    .lead-main{
+      grid-template-columns:1fr auto;gap:.5rem .75rem;
+      padding:.875rem 1rem;align-items:start;
+    }
+    .lead-est{grid-row:1;grid-column:2;justify-self:end;}
+    .lead-cli{grid-row:1;grid-column:1;}
+    .lead-pide{grid-row:2;grid-column:1/-1;}
+    .lead-val{grid-row:3;grid-column:1;text-align:left;}
+    .chev{grid-row:3;grid-column:2;justify-self:end;align-self:center;}
+    .lead-go{position:static;margin:0 1rem 1rem;}
+    .lead-detail{padding-left:1rem;}
+  }
+
   .avatar{
     width:2.5rem;height:2.5rem;border-radius:50%;flex:none;
     background:var(--mist);color:var(--navy);
@@ -1181,6 +1264,9 @@
   var runToken = 0;
   var speed = 1;
   var transcripts = {};   /* id -> [{who,text,time}] de conversaciones ya vistas */
+  /* Filas desplegadas. La lista se redibuja al abrir o cerrar el chat y al
+     recuperar a alguien: sin esto, el detalle que estabas leyendo se cerraba solo. */
+  var abiertos = {};
 
   /* Leads recuperados durante esta demo. Se guardan aparte de `historia` para
      poder volver a aplicarlos sobre un histórico recién generado: la calculadora,
@@ -2151,61 +2237,103 @@
            '</span>';
   }
 
-  function leadCardHTML(l){
-    var st = STATUS[l.estado];
+  /* Qué vino a pedir, en una línea que quepa en su columna. El detalle largo
+     (factura estimada, componentes del kit, hora) vive en el desplegable. */
+  function resumenPide(l){
+    if(esAmplia(l)){
+      return {
+        v: piezaAmplia(l.intencion, l.cantidad),
+        k: "sobre su " + KITS[l.kitInstalado].short + " \u00b7 " + l.lugar.toLowerCase()
+      };
+    }
+    var sub = l.billCOP
+      ? "Factura de " + formatCOP(l.billCOP) + " \u00b7 " + l.lugar.toLowerCase()
+      : "Consumo sin confirmar \u00b7 " + l.lugar.toLowerCase();
+    if(l.kit) return { v:KITS[l.kit].name, k:sub };
+    return { v:"Recomendado: " + KITS[kitRecomendado(l)].name, k:sub };
+  }
+
+  /* Quien ya cerró muestra lo que vale; quien se enfrió, lo que está en juego.
+     La columna nunca queda vacía, que es lo que la haría inútil de barrer. */
+  function celdaValor(l){
+    var cerrado = valorDe(l);
+    if(cerrado !== null) return '<span class="lead-val">' + esc(formatCOP(cerrado)) + '</span>';
+    return '<span class="lead-val riesgo">' + esc(formatCOP(valorEnJuego(l))) +
+           '<span class="en-juego">en juego</span></span>';
+  }
+
+  function leadRowHTML(l){
+    var st    = STATUS[l.estado];
+    var pide  = resumenPide(l);
+    var frio  = l.estado === "curiosidad";
+    var open  = !!abiertos[l.id];
+    var det   = "det-" + l.id;
 
     /* Quien ya tiene sistema instalado no necesita que le recomienden un kit:
-       necesita saber qué le cabe encima. La ficha cambia de campos, no de forma. */
+       necesita saber qué le cabe encima. El detalle cambia de campos, no de forma. */
     var cabecera, kitBlock, valorLab;
     if(esAmplia(l)){
       var amp = AMPLIA[l.intencion];
       cabecera = field("Sistema instalado", KITS[l.kitInstalado].short) +
-                 field("Ubicación", l.lugar);
+                 field("Ubicaci\u00f3n", l.lugar);
       kitBlock = '<span class="lead-field full">' +
-                   '<span class="k">Ampliación que pidió</span>' +
+                   '<span class="k">Ampliaci\u00f3n que pidi\u00f3</span>' +
                    '<span class="v">' + esc(piezaAmplia(l.intencion, l.cantidad)) + '</span>' +
                    '<span class="kit-desc">' + esc(amp.gancho) + '</span>' +
                  '</span>';
-      valorLab = "Valor de la ampliación";
+      valorLab = "Valor de la ampliaci\u00f3n";
     } else {
       cabecera = field("Paquete recomendado", KITS[kitRecomendado(l)].short) +
-                 field("Lugar instalación", l.lugar);
+                 field("Lugar instalaci\u00f3n", l.lugar);
       kitBlock = l.kit
         ? '<span class="lead-field full">' +
             '<span class="k">Kit elegido</span>' +
             '<span class="v">' + esc(KITS[l.kit].name) + '</span>' +
-            '<span class="kit-desc">' + esc(KITS[l.kit].partes.join(" · ")) + '</span>' +
+            '<span class="kit-desc">' + esc(KITS[l.kit].partes.join(" \u00b7 ")) + '</span>' +
           '</span>'
-        : field("Kit elegido", "Aún no ha elegido", "full", "muted");
+        : field("Kit elegido", "A\u00fan no ha elegido", "full", "muted");
       valorLab = "Valor del kit";
     }
 
-    var foot = l.estado === "curiosidad"
-      ? '<span class="lead-foot">Se enfrió. Toca para recuperarlo.</span>'
-      : '<span class="lead-foot plain">Escribió a las ' + esc(l.hora) +
-        ' · respondido en ' + esc(l.respuesta) + ' s</span>';
+    var foot = frio
+      ? '<span class="lead-foot">Escribi\u00f3 a las ' + esc(l.hora) +
+        ' y se enfri\u00f3. Nadie le contest\u00f3.</span>'
+      : '<span class="lead-foot plain">Escribi\u00f3 a las ' + esc(l.hora) +
+        ' \u00b7 respondido en ' + esc(l.respuesta) + ' s</span>';
 
     return (
-      '<button type="button" class="lead-card" data-id="' + esc(l.id) + '" id="card-' + esc(l.id) + '"' +
+      '<div class="lead-row" id="card-' + esc(l.id) + '" data-id="' + esc(l.id) + '"' +
         ' aria-current="' + (activeLeadId === l.id ? "true" : "false") + '">' +
-        '<span class="lead-top">' +
-          '<span class="lead-id">' +
+        '<button type="button" class="lead-main" data-toggle="' + esc(l.id) + '"' +
+          ' aria-expanded="' + (open ? "true" : "false") + '" aria-controls="' + det + '">' +
+          '<span class="lead-est"><span class="badge ' + st.cls + '">' + esc(st.label) + '</span></span>' +
+          '<span class="lead-cli">' +
             '<span class="avatar" aria-hidden="true">' + esc(initials(l.name)) + '</span>' +
             '<span class="lead-who">' +
               '<span class="lead-name">' + esc(l.name) + '</span>' +
               (l.business ? '<span class="lead-biz">' + esc(l.business) + '</span>' : '') +
             '</span>' +
           '</span>' +
-          '<span class="badge ' + st.cls + '">' + esc(st.label) + '</span>' +
-        '</span>' +
-        '<span class="lead-grid">' +
-          cabecera +
-          field(esAmplia(l) ? "Situación" : "Gasto mensual informado", consumoDisplay(l), "full") +
-          kitBlock +
-          field(valorLab, formatCOP(valorDe(l))) +
-        '</span>' +
-        foot +
-      '</button>'
+          '<span class="lead-pide">' +
+            '<span class="pide-v">' + esc(pide.v) + '</span>' +
+            '<span class="pide-k">' + esc(pide.k) + '</span>' +
+          '</span>' +
+          celdaValor(l) +
+          '<span class="chev" aria-hidden="true">\u25be</span>' +
+        '</button>' +
+        '<button type="button" class="lead-go' + (frio ? " hot" : "") + '" data-go="' + esc(l.id) + '">' +
+          (frio ? "Recuperar" : "Ver chat") +
+        '</button>' +
+        '<div class="lead-detail" id="' + det + '"' + (open ? "" : " hidden") + '>' +
+          '<div class="lead-grid">' +
+            cabecera +
+            field(esAmplia(l) ? "Situaci\u00f3n" : "Gasto mensual informado", consumoDisplay(l), "full") +
+            kitBlock +
+            field(valorLab, formatCOP(valorDe(l))) +
+          '</div>' +
+          foot +
+        '</div>' +
+      '</div>'
     );
   }
 
@@ -2228,7 +2356,7 @@
         '<span><b>' + frios.length + (frios.length === 1 ? ' persona se enfri\u00f3' : ' personas se enfriaron') + '</b></span>' +
         '<span class="sep" aria-hidden="true">\u00b7</span>' +
         '<span><b>' + esc(formatCOP(enJuego)) + '</b> en juego</span>' +
-        '<span class="tail">Toca su tarjeta y mira lo que hace el agente</span>';
+        '<span class="tail">Toca \u00abRecuperar\u00bb y mira lo que hace el agente</span>';
     } else {
       barra.className = "alertbar ok";
       barra.innerHTML =
@@ -2240,13 +2368,35 @@
 
   function renderLeads(){
     var list = document.getElementById("leadsList");
-    list.innerHTML = leads.map(leadCardHTML).join("");
+    list.innerHTML =
+      '<div class="leads-head" aria-hidden="true">' +
+        '<span>Estado</span><span>Cliente</span><span>Qu\u00e9 pide</span>' +
+        '<span class="h-val">Valor</span><span></span>' +
+      '</div>' +
+      leads.map(leadRowHTML).join("");
     document.getElementById("leadsCount").textContent =
       leads.length + (leads.length === 1 ? " persona" : " personas");
     renderConvAlert();
-    Array.prototype.forEach.call(list.querySelectorAll(".lead-card"), function(card){
-      card.addEventListener("click", function(){ openChat(card.getAttribute("data-id")); });
+
+    /* Tocar la fila despliega su detalle; el bot\u00f3n abre la conversaci\u00f3n. Son
+       dos acciones distintas, as\u00ed que son dos botones y no uno anidado en otro. */
+    Array.prototype.forEach.call(list.querySelectorAll(".lead-main"), function(b){
+      b.addEventListener("click", function(){ alternaDetalle(b.getAttribute("data-toggle")); });
     });
+    Array.prototype.forEach.call(list.querySelectorAll(".lead-go"), function(b){
+      b.addEventListener("click", function(){ openChat(b.getAttribute("data-go")); });
+    });
+  }
+
+  function alternaDetalle(id){
+    var fila = document.getElementById("card-" + id);
+    if(!fila) return;
+    var btn = fila.querySelector(".lead-main");
+    var det = document.getElementById("det-" + id);
+    var abrir = !abiertos[id];
+    if(abrir) abiertos[id] = true; else delete abiertos[id];
+    btn.setAttribute("aria-expanded", abrir ? "true" : "false");
+    det.hidden = !abrir;
   }
 
   function renderAll(){
@@ -2894,6 +3044,7 @@
     if(enCurso && !window.confirm("Hay una conversación a medias. ¿Reiniciar el demo de todas formas?")) return;
     leads = initialLeads();
     transcripts = {};
+    abiertos = {};          /* tambien se cierran las filas desplegadas */
     lastStats = {};
     clearStore();
     /* El histórico lleva dentro los leads recuperados en vivo: se regenera entero.

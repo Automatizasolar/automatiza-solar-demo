@@ -6,10 +6,19 @@ personas que escribieron de noche y en qué quedó cada una.
 
 ## Cómo usarlo en una llamada
 
-- **Toca cualquier tarjeta** para leer la conversación de esa persona. El chat entra como
-  **cajón lateral** y, en pantalla ancha, el panel se aparta en vez de quedar tapado: se ve
-  el marcador y la conversación a la vez. Eso es lo que hay que enseñar — el dolor y la
-  solución en el mismo pantallazo. Por debajo de 48rem ocupa la pantalla entera.
+- **Las conversaciones son una lista, no tarjetas.** Cada persona es una fila con estado,
+  nombre, qué pide y cuánto vale, alineados por columna para poder barrerlas y compararlas.
+  **Tocar la fila despliega el detalle completo dentro de ella** — sistema instalado, gasto
+  informado, componentes, hora — y tocar otra vez lo cierra.
+- **El botón de la derecha abre la conversación**: dice *Recuperar* (verde) en quien se
+  enfrió y *Ver chat* en el resto. Son dos acciones distintas, así que son dos botones y no
+  uno anidado en otro. El chat entra como **cajón lateral** y, en pantalla ancha, el panel se
+  aparta en vez de quedar tapado: se ve el marcador y la conversación a la vez. Eso es lo que
+  hay que enseñar — el dolor y la solución en el mismo pantallazo. Por debajo de 48rem el
+  cajón ocupa la pantalla entera.
+- En la columna de valor, quien ya cerró muestra lo que vale y quien se enfrió muestra lo que
+  está **en juego**, en rojo. La columna nunca queda vacía, que es lo que la haría inútil de
+  barrer.
 - **Andrés Zapata** está marcado como "Solo curiosidad": su conversación es interactiva y
   termina recuperándolo. Al confirmar, **los indicadores de arriba se mueven de verdad**:
   entra en el histórico de hoy como una venta y una visita más, y las cuatro tarjetas
@@ -27,7 +36,7 @@ personas que escribieron de noche y en qué quedó cada una.
 
 ## Doce conversaciones, no una repetida
 
-No todo el que escribe de noche quiere lo mismo, y la demo se cae si las doce tarjetas
+No todo el que escribe de noche quiere lo mismo, y la demo se cae si las doce filas
 cuentan la misma historia. Cada lead lleva una `intencion`:
 
 - **`kit`** — sistema nuevo. Corre el cuestionario entero: factura, sitio, y las tres
@@ -54,7 +63,7 @@ El chat imita WhatsApp lo justo para que se reconozca sin fingir que lo es: burb
 cola, marca de día, hora y doble check azul, indicador de tecleo y una cabecera que pasa a
 «escribiendo…» mientras el agente responde. El papel tapiz **no son los garabatos de
 WhatsApp** sino una retícula propia de celdas solares. La franja bajo la cabecera lleva el
-estado del lead, y cambia a *Recuperado* en el mismo momento que la tarjeta del panel.
+estado del lead, y cambia a *Recuperado* en el mismo momento que la fila de la lista.
 
 Las tres opciones de kit **no son un párrafo**, sino una ficha con precio y una marca en el
 que corresponde al consumo del lead. Un muro de texto en un chat no lo lee nadie, y menos en
