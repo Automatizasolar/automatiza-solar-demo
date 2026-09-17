@@ -6,6 +6,15 @@ personas que escribieron de noche y en qué quedó cada una.
 
 ## Cómo usarlo en una llamada
 
+- **La demo abre con una conversación ya puesta.** Al cargar en pantalla ancha se despliega
+  sola la de Marcela Restrepo, junto al marcador: quien abre el enlace entiende en tres
+  segundos de qué va esto sin tener que tocar nada.
+  Se abre una **ya resuelta** a propósito. Abrir un lead frío gastaría el momento que quieres
+  provocar tú en vivo — recuperarlo y ver moverse las cifras — así que los seis fríos quedan
+  intactos. Se cambia con `LEAD_INICIAL` en el script.
+  No se auto-abre por debajo de 75rem: ahí el cajón taparía el panel entero. Y si lo cierras,
+  no vuelve solo, ni siquiera tras un F5; «Reiniciar demo» lo devuelve a la primera visita.
+
 - **Las conversaciones son una lista, no tarjetas.** Cada persona es una fila con estado,
   nombre, qué pide y cuánto vale, alineados por columna para poder barrerlas y compararlas.
   **Tocar la fila despliega el detalle completo dentro de ella** — sistema instalado, gasto
@@ -177,6 +186,26 @@ cuántas hay. Se navega por meses y al tocar un día se ve quién viene, a qué 
 
 Todas las personas y negocios del panel son **ficticios**. No hay formularios, ni cookies, ni
 llamadas de red: nada sale del navegador salvo la fuente de Google Fonts.
+
+## Las fotos
+
+Son de banco de imágenes (Unsplash), descargadas ya en `webp` y al tamaño exacto, y servidas
+desde el propio dominio: la CSP es `img-src 'self' data:` y no admite ningún CDN en caliente.
+El detalle de cada una, con su origen y cómo sustituirla, está en `brand/CREDITOS.md`.
+
+- `brand/fotos/` — cabecera, banda de cierre y una miniatura por kit dentro del chat.
+- `brand/avatares/` — los doce retratos de la lista y de la cabecera del chat.
+
+Dos decisiones que no son evidentes al leer el código:
+
+- **La foto de cabecera va como fondo CSS y no como `<img>`.** En móvil se oculta, y un `<img>`
+  oculto **se descarga igual** — comprobado, y `loading="lazy"` tampoco lo evita. Declarando el
+  fondo dentro del media query, el móvil se ahorra 131 KB que no iba a ver.
+- **La inicial sigue debajo de cada avatar.** Si la foto no carga, se ve la inicial en vez de un
+  círculo vacío.
+
+Si un día tienes fotos de instalaciones tuyas, sustitúyelas: convencen más que un banco de
+imágenes. Basta con respetar el nombre y las dimensiones.
 
 ## Estructura
 

@@ -326,11 +326,18 @@
     .lead-detail{padding-left:1rem;}
   }
 
+  /* La inicial se queda debajo como respaldo: si la foto no carga (red, bloqueo,
+     404) se sigue viendo algo en vez de un hueco gris. */
   .avatar{
+    position:relative;overflow:hidden;
     width:2.5rem;height:2.5rem;border-radius:50%;flex:none;
     background:var(--mist);color:var(--navy);
     display:flex;align-items:center;justify-content:center;
     font-weight:700;font-size:.875rem;letter-spacing:-0.02em;
+  }
+  .avatar img{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;border-radius:50%;
   }
   /* La tarjeta es un <button>, así que los hijos son <span>: hay que devolverles el flujo de bloque. */
   .lead-who,.lead-name,.lead-biz,.lead-field,.lead-field .k,.lead-field .v,.kit-desc,.lead-foot{display:block;}
@@ -887,6 +894,64 @@
     .stat-card .value{font-size:1.25rem;}
   }
 
+  /* ================= Fotografía =================
+     La demo era todo tipografía y tarjetas blancas. Las fotos no decoran: sitúan
+     el producto. Todas llevan width/height fijos para que no salte la maquetación
+     al cargar, y van en diferido salvo la de cabecera. */
+
+  /* ---- Cabecera a dos columnas ---- */
+  .hero{display:grid;gap:clamp(1rem,3vw,2rem);align-items:center;}
+  .hero-txt{min-width:0;}
+  /* Acotada en alto a propósito: el marcador tiene que seguir cabiendo en la
+     primera pantalla sin rodar la rueda, que es para lo que se compactó la
+     cabecera. La foto acompaña al titular, no manda sobre él. */
+  /* Acotada en alto a propósito: el marcador tiene que seguir cabiendo en la
+     primera pantalla sin rodar la rueda, que es para lo que se compactó la
+     cabecera. La foto acompaña al titular, no manda sobre él. */
+  .hero-img{
+    display:none;
+    width:100%;height:clamp(7rem,14vw,11rem);
+    border-radius:var(--r-card);box-shadow:var(--shadow-sec);
+    background:var(--mist) center/cover no-repeat;
+  }
+  /* Dos columnas solo cuando de verdad hay sitio. Ojo: con el cajón del chat
+     abierto el contenido pierde 27rem, así que el umbral sube en consecuencia
+     (1440px de pantalla dejan ~1008px de contenido). */
+  @media(min-width:62rem){
+    .hero{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);}
+    .hero-img{display:block;background-image:url("/brand/fotos/hero-tejado.webp");}
+  }
+  /* Con el cajón abierto el contenido pierde 27rem: por debajo de 88rem de
+     ventana no queda sitio para dos columnas y la foto se retira. */
+  @media(min-width:75rem){
+    body.chat-open .hero{grid-template-columns:1fr;}
+    body.chat-open .hero-img{display:none;}
+  }
+  @media(min-width:88rem){
+    body.chat-open .hero{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);}
+    body.chat-open .hero-img{display:block;}
+  }
+
+  /* ---- Banda de cierre sobre foto ---- */
+  .closing{position:relative;isolation:isolate;overflow:hidden;}
+  .closing-bg{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    z-index:-2;
+  }
+  /* Velo navy: sin esto el texto blanco no tiene contraste suficiente sobre el cielo. */
+  .closing::after{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(180deg,rgba(6,42,80,.90),rgba(6,42,80,.94));
+  }
+
+  /* ---- Miniatura por kit dentro del chat ---- */
+  .kitrow{grid-template-columns:auto 1fr auto;column-gap:.625rem;align-items:center;}
+  .kimg{
+    grid-row:1/3;width:3rem;height:3rem;border-radius:.375rem;
+    object-fit:cover;flex:none;
+  }
+  .kitrow .kd{grid-column:2/-1;}
+
 </style>
 </head>
 <body>
@@ -913,8 +978,15 @@
 <div class="wrap">
 
   <div class="hero sec-first">
-    <h1>Tu negocio, con alguien contestando siempre.</h1>
-    <p>Quién escribe, cuánto se cierra y qué visitas quedan agendadas.</p>
+    <div class="hero-txt">
+      <h1>Tu negocio, con alguien contestando siempre.</h1>
+      <p>Quién escribe, cuánto se cierra y qué visitas quedan agendadas.</p>
+    </div>
+    <!-- Es una foto decorativa: ilustra el titular, no añade información. Va como
+         fondo CSS y no como <img> por un motivo medible: en móvil se oculta, y un
+         <img> oculto se descarga igual (probado, `loading="lazy"` tampoco lo evita).
+         Declarando el fondo dentro del media query, el móvil no pide los 131 KB. -->
+    <div class="hero-img" role="presentation"></div>
   </div>
 
   <!-- Todo lo que cambia lo que estás mirando vive aquí, sobre fondo oscuro:
@@ -1084,6 +1156,8 @@
 </main>
 
 <section class="closing">
+  <img class="closing-bg" src="/brand/fotos/cierre-instalacion.webp" width="1600" height="560"
+       alt="" loading="lazy" decoding="async" aria-hidden="true">
   <div class="wrap">
     <h2>Tu WhatsApp puede verse así en siete días hábiles.</h2>
     <p>Me pasas tu número y tu catálogo con precios, y cierro la instalación sobre la línea
@@ -1122,7 +1196,9 @@
 </section>
 
 <footer class="note">
-  <div class="wrap">Demo con datos ficticios. Ninguna persona ni negocio de este panel es real.</div>
+  <div class="wrap">Demo con datos ficticios: ninguna persona ni negocio de este panel es real.
+    Las fotos de perfil son de banco de imágenes y no corresponden a las personas que aparecen
+    nombradas.</div>
 </footer>
 
 <script>
@@ -1192,66 +1268,66 @@
      todas al mismo guion. `intencion` decide qué rama de la conversación corre. */
   function initialLeads(){
     return [
-      { id:"marcela", name:"Marcela Restrepo", business:null, hora:"8:41 p.m.", respuesta:6,
+      { id:"marcela", foto:"/brand/avatares/marcela.webp", name:"Marcela Restrepo", business:null, hora:"8:41 p.m.", respuesta:6,
         intencion:"kit", apertura:"Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar?",
         consumoTexto:"Factura mensual de $280.000", billCOP:280000, lugar:"Techo",
         kit:2, estado:"comprado" },
 
-      { id:"yuliana", name:"Yuliana Cardona", business:null, hora:"8:58 p.m.", respuesta:5,
+      { id:"yuliana", foto:"/brand/avatares/yuliana.webp", name:"Yuliana Cardona", business:null, hora:"8:58 p.m.", respuesta:5,
         intencion:"paneles", kitInstalado:1, cantidad:4, cerrado:false,
         apertura:"Buenas, ustedes me instalaron el Kit 1 el año pasado. ¿Le puedo poner más paneles?",
         consumoTexto:"Kit 1 instalado hace 14 meses — la factura le volvió a subir",
         billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" },
 
-      { id:"julian", name:"Julián Ospina", business:null, hora:"9:17 p.m.", respuesta:9,
+      { id:"julian", foto:"/brand/avatares/julian.webp", name:"Julián Ospina", business:null, hora:"9:17 p.m.", respuesta:9,
         intencion:"kit", apertura:"Buenas noches, quiero saber precios de paneles para una finca",
         consumoTexto:"No conoce el consumo exacto — finca para 4 personas", billCOP:null, lugar:"Patio",
         kit:1, estado:"pendiente" },
 
-      { id:"wilson", name:"Wilson Agudelo", business:"Taller Los Andes", hora:"9:39 p.m.", respuesta:6,
+      { id:"wilson", foto:"/brand/avatares/wilson.webp", name:"Wilson Agudelo", business:"Taller Los Andes", hora:"9:39 p.m.", respuesta:6,
         intencion:"baterias", kitInstalado:2, cantidad:2, cerrado:false,
         apertura:"Hola, tengo el Kit 2 en el taller. Se me va la luz de noche y se cae todo, ¿venden baterías sueltas?",
         consumoTexto:"Kit 2 instalado — se queda corto en los cortes de la noche",
         billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" },
 
-      { id:"diana", name:"Diana Muñoz", business:"Ferretería El Tornillo", hora:"9:52 p.m.", respuesta:5,
+      { id:"diana", foto:"/brand/avatares/diana.webp", name:"Diana Muñoz", business:"Ferretería El Tornillo", hora:"9:52 p.m.", respuesta:5,
         intencion:"kit", apertura:"Buenas, necesito cotización para la ferretería",
         consumoTexto:"Factura mensual de $610.000", billCOP:610000, lugar:"Techo",
         kit:3, estado:"visita" },
 
-      { id:"natalia", name:"Natalia Ríos", business:null, hora:"10:08 p.m.", respuesta:8,
+      { id:"natalia", foto:"/brand/avatares/natalia.webp", name:"Natalia Ríos", business:null, hora:"10:08 p.m.", respuesta:8,
         intencion:"paneles", kitInstalado:2, cantidad:2, cerrado:true,
         apertura:"Hola! Tengo el Kit 2 y quiero agregar un par de paneles, ¿cuánto sale?",
         consumoTexto:"Kit 2 instalado — quiere cubrir el aire acondicionado del cuarto",
         billCOP:null, lugar:"Techo", kit:null, estado:"pendiente" },
 
-      { id:"oscar", name:"Óscar Mejía", business:"Hotel Campestre", hora:"10:24 p.m.", respuesta:5,
+      { id:"oscar", foto:"/brand/avatares/oscar.webp", name:"Óscar Mejía", business:"Hotel Campestre", hora:"10:24 p.m.", respuesta:5,
         intencion:"kit", apertura:"Buenas, para un hotel pequeño, ¿qué me recomiendan?",
         consumoTexto:"Factura mensual de $1.480.000", billCOP:1480000, lugar:"Techo",
         kit:null, estado:"curiosidad" },
 
-      { id:"andres", name:"Andrés Zapata", business:null, hora:"10:47 p.m.", respuesta:4,
+      { id:"andres", foto:"/brand/avatares/andres.webp", name:"Andrés Zapata", business:null, hora:"10:47 p.m.", respuesta:4,
         intencion:"kit", apertura:"Hola! Vi el anuncio de paneles solares, ¿me pueden ayudar?",
         consumoTexto:"Factura mensual de $195.000", billCOP:195000, lugar:"Techo",
         kit:null, estado:"curiosidad" },
 
-      { id:"claudia", name:"Claudia Henao", business:"Panadería La Espiga", hora:"10:55 p.m.", respuesta:7,
+      { id:"claudia", foto:"/brand/avatares/claudia.webp", name:"Claudia Henao", business:"Panadería La Espiga", hora:"10:55 p.m.", respuesta:7,
         intencion:"baterias", kitInstalado:3, cantidad:2, cerrado:true,
         apertura:"Buenas noches, tengo el Kit 3 en la panadería. Quiero más respaldo para los hornos de madrugada.",
         consumoTexto:"Kit 3 instalado — arranca los hornos a las 3 a.m.",
         billCOP:null, lugar:"Techo", kit:null, estado:"visita" },
 
-      { id:"hernan", name:"Hernán Castaño", business:null, hora:"11:12 p.m.", respuesta:6,
+      { id:"hernan", foto:"/brand/avatares/hernan.webp", name:"Hernán Castaño", business:null, hora:"11:12 p.m.", respuesta:6,
         intencion:"kit", apertura:"Buenas, cuánto cuesta poner paneles en una casa de dos pisos?",
         consumoTexto:"No conoce el consumo exacto — casa de dos pisos, 5 personas",
         billCOP:null, lugar:"Techo", kit:null, estado:"curiosidad" },
 
-      { id:"luisfernando", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", hora:"11:34 p.m.", respuesta:7,
+      { id:"luisfernando", foto:"/brand/avatares/luisfernando.webp", name:"Luis Fernando Gómez", business:"Restaurante La Cazuela", hora:"11:34 p.m.", respuesta:7,
         intencion:"kit", apertura:"Hola, quiero cotizar paneles para el restaurante",
         consumoTexto:"No conoce el consumo exacto — local con uso constante de neveras", billCOP:null, lugar:"Patio",
         kit:2, estado:"recuperado" },
 
-      { id:"paula", name:"Paula Betancur", business:"Lavandería Aqua", hora:"11:49 p.m.", respuesta:5,
+      { id:"paula", foto:"/brand/avatares/paula.webp", name:"Paula Betancur", business:"Lavandería Aqua", hora:"11:49 p.m.", respuesta:5,
         intencion:"paneles", kitInstalado:1, cantidad:6, cerrado:false,
         apertura:"Hola, monté una lavandería y el Kit 1 se me quedó corto. Necesito más paneles ya.",
         consumoTexto:"Kit 1 instalado — abrió la lavandería y dobló el consumo",
@@ -1331,7 +1407,8 @@
   function save(){
     try{
       sessionStorage.setItem(STORE_KEY, JSON.stringify({
-        leads:leads, transcripts:transcripts, recuperados:recuperadosEnVivo
+        leads:leads, transcripts:transcripts, recuperados:recuperadosEnVivo,
+        chatCerrado:chatCerrado
       }));
     }catch(e){ /* modo privado o almacenamiento bloqueado: seguimos sin guardar */ }
   }
@@ -1344,6 +1421,9 @@
         leads = data.leads;
         transcripts = data.transcripts || {};
         recuperadosEnVivo = Array.isArray(data.recuperados) ? data.recuperados : [];
+        /* Un estado guardado por una versión anterior no trae el campo: `undefined`
+           se convierte en `false` y la conversación se abre, que es lo correcto. */
+        chatCerrado = !!data.chatCerrado;
       }
     }catch(e){ /* dato corrupto: arrancamos limpio */ }
   }
@@ -1388,6 +1468,16 @@
   var historia = [];        /* [{key, date, personas, recuperados, ventas, ingresos, respuesta, visitas:[...]}] */
   var porDia = {};
   var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  /* Qué conversación se abre sola al cargar, y si el visitante ya la descartó.
+     Se abre una YA RESUELTA a propósito: abrir un lead frío gastaría el momento
+     que el vendedor quiere provocar en vivo (recuperarlo y ver moverse el marcador). */
+  var LEAD_INICIAL = "marcela";
+  var chatCerrado  = false;
+  /* 75rem es el umbral donde el contenido se aparta en vez de quedar tapado. Entre
+     48 y 75rem el cajón es fijo Y aparece el velo: la página quedaría medio tapada
+     y sin poder tocarse. Por debajo de 75rem no se auto-abre nada. */
+  var mqAncha = window.matchMedia("(min-width:75rem)");
 
   /* Ticket medio del catálogo (40/40/20 sobre los tres kits). Los precios de KITS
      y AMPLIA están en el rango real pero no son la lista oficial: sirven para que
@@ -2310,7 +2400,9 @@
           ' aria-expanded="' + (open ? "true" : "false") + '" aria-controls="' + det + '">' +
           '<span class="lead-est"><span class="badge ' + st.cls + '">' + esc(st.label) + '</span></span>' +
           '<span class="lead-cli">' +
-            '<span class="avatar" aria-hidden="true">' + esc(initials(l.name)) + '</span>' +
+            '<span class="avatar" aria-hidden="true">' + esc(initials(l.name)) +
+              (l.foto ? '<img src="' + esc(l.foto) + '" alt="" width="40" height="40" loading="lazy" decoding="async">' : '') +
+            '</span>' +
             '<span class="lead-who">' +
               '<span class="lead-name">' + esc(l.name) + '</span>' +
               (l.business ? '<span class="lead-biz">' + esc(l.business) + '</span>' : '') +
@@ -2521,6 +2613,8 @@
       var kit = KITS[k];
       var esRec = rec && rec.kit === k;
       return '<div class="kitrow' + (esRec ? ' rec' : '') + '">' +
+               '<img class="kimg" src="/brand/fotos/kit-' + k + '.webp" width="300" height="200"' +
+                 ' alt="" loading="lazy" decoding="async" aria-hidden="true">' +
                '<span class="kn">' + esc(kit.short) + ' \u00b7 ' + esc(kit.name.split("\u2014")[1].trim()) +
                  (esRec ? '<span class="tag">Para tu consumo</span>' : '') + '</span>' +
                '<span class="kp">' + esc(formatCOP(kit.precio)) + '</span>' +
@@ -2899,6 +2993,17 @@
     maybeScroll(true);
   }
 
+  /* La misma inicial-con-foto-encima que en la lista, para la cabecera del chat. */
+  function pintaAvatar(el, lead){
+    if(!el) return;
+    el.textContent = initials(lead.name);
+    if(!lead.foto) return;
+    var img = document.createElement("img");
+    img.src = lead.foto; img.alt = ""; img.width = 36; img.height = 36;
+    img.decoding = "async";
+    el.appendChild(img);
+  }
+
   /* ---- Cabecera viva: el agente escribe, y se nota ---- */
   var chatSub = document.getElementById("chatSub");
   function subEstado(texto, vivo){
@@ -2932,7 +3037,10 @@
     setTimeout(function(){ if(chip.parentNode) chip.remove(); }, 9000);
   }
 
-  function openChat(leadId){
+  /* `opts.auto` distingue la apertura automática del arranque de un clic del
+     visitante: en la automática no se roba el foco ni se mueve la página. */
+  function openChat(leadId, opts){
+    var auto = !!(opts && opts.auto);
     var lead = leads.filter(function(l){ return l.id === leadId; })[0];
     if(!lead) return;
 
@@ -2943,7 +3051,7 @@
 
     limpiarChat();
     chatChoices.innerHTML = "";
-    document.getElementById("chatAvatar").textContent = initials(lead.name);
+    pintaAvatar(document.getElementById("chatAvatar"), lead);
     document.getElementById("chatName").textContent = lead.name;
     pintaInsignia(lead);
     subEstado("en línea", false);
@@ -2955,11 +3063,15 @@
     document.body.classList.add("chat-open");
     if(mqCompact.matches) document.body.classList.add("locked");
     /* Con el cajon abierto lo que importa es ver moverse el marcador: lo
-       subimos a la vista en vez de dejarlo donde estuviera la rueda. */
-    if(!mqCompact.matches) window.scrollTo({ top:0, behavior: reduce ? "auto" : "smooth" });
+       subimos a la vista en vez de dejarlo donde estuviera la rueda. En la
+       apertura automática NO: Chrome restaura el scroll al recargar y un
+       desplazamiento suave tiraría de la vista mientras el cajón entra. */
+    if(!mqCompact.matches && !auto) window.scrollTo({ top:0, behavior: reduce ? "auto" : "smooth" });
 
     renderLeads();
-    chatPanel.focus();
+    /* Robar el foco al cargar mandaría el primer Tab dentro del cajón y haría que
+       un lector de pantalla anunciara "Conversación" en vez del principio. */
+    if(!auto) chatPanel.focus();
 
     resetScriptState();
     currentLead = lead;
@@ -2987,7 +3099,13 @@
     else renderStatic(buildRecap(lead), false, lead);
   }
 
+  /* Marca siempre, sin excepción. No se puede distinguir aquí "cerró el usuario"
+     de "cerró el código" con un parámetro: `closeChat` está registrada
+     directamente como listener de click, así que recibiría el MouseEvent como
+     primer argumento (verdadero por accidente) mientras que la tecla Escape la
+     llama sin argumentos. El reinicio es quien vuelve a poner la bandera a false. */
   function closeChat(){
+    chatCerrado = true;
     runToken += 1;
     activeLeadId = null;
     chatPanel.classList.remove("open");
@@ -3001,6 +3119,20 @@
       if(again) again.focus();
       lastTrigger = null;
     }
+  }
+
+  /* Lo primero que ve quien abre el enlace: una conversación de WhatsApp ya
+     atendida al lado del marcador. Sin esto hay que adivinar de qué va la demo. */
+  function autoAbrirConversacion(){
+    if(chatCerrado) return;          /* lo descartó antes de recargar */
+    if(!mqAncha.matches) return;     /* estrecho: taparía el panel entero */
+    if(activeLeadId) return;         /* defensivo: ya hay uno abierto */
+    var lead = leads.filter(function(l){ return l.id === LEAD_INICIAL; })[0];
+    if(!lead) return;
+    /* Guardia dura: un lead frío arrancaría `playFrom`, que anima la conversación
+       y deja el foco en un botón esperando respuesta. No es un arranque válido. */
+    if(lead.estado === "curiosidad") return;
+    openChat(LEAD_INICIAL, { auto:true });
   }
 
   document.getElementById("scrim").addEventListener("click", closeChat);
@@ -3062,6 +3194,10 @@
     calSel = null;
     runToken += 1;
     closeChat();
+    /* `closeChat` acaba de marcarlo; el reinicio devuelve la demo a su estado de
+       partida, así que un F5 posterior vuelve a comportarse como visita nueva.
+       No se reabre ahora: el vendedor está en llamada y acaba de resetear. */
+    chatCerrado = false;
     ocultaTip();
     renderAll();
     renderChart(false);
@@ -3212,6 +3348,9 @@
   renderAll();
   renderCalendar();
   mostrarTab("conv");
+  /* Al final del todo: la lista y el marcador ya están pintados, así que la fila
+     resaltada y la insignia del chat salen correctas a la primera. */
+  autoAbrirConversacion();
 })();
 </script>
 </body>
