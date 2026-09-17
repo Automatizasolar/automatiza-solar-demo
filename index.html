@@ -1403,7 +1403,7 @@
 
   /* ============ Estado guardado (sobrevive a un F5 accidental) ============ */
 
-  var STORE_KEY = "as-demo-v4";
+  var STORE_KEY = "as-demo-v5";
   function save(){
     try{
       sessionStorage.setItem(STORE_KEY, JSON.stringify({
@@ -1419,6 +1419,17 @@
       var data = JSON.parse(raw);
       if(data && Array.isArray(data.leads) && data.leads.length){
         leads = data.leads;
+        /* Lo guardado es el estado del visitante (qué eligió, qué recuperó), no el
+           catálogo. Los campos fijos se vuelven a tomar del origen, así que añadir
+           uno nuevo no deja a medias a quien ya tenía una sesión abierta — que es
+           justo lo que pasó al incorporar las fotos. */
+        var base = {};
+        initialLeads().forEach(function(l){ base[l.id] = l; });
+        leads.forEach(function(l){
+          var b = base[l.id];
+          if(!b) return;
+          l.foto = b.foto; l.apertura = b.apertura; l.consumoTexto = b.consumoTexto;
+        });
         transcripts = data.transcripts || {};
         recuperadosEnVivo = Array.isArray(data.recuperados) ? data.recuperados : [];
         /* Un estado guardado por una versión anterior no trae el campo: `undefined`
