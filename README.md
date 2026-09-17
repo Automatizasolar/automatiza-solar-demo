@@ -135,6 +135,8 @@ cuántas hay. Se navega por meses y al tocar un día se ve quién viene, a qué 
 - **Un precio por kit**, definido una sola vez en `KITS`, y **un precio por pieza de
   ampliación** en `AMPLIA` (panel de 730W y batería de 51.2V/100Ah). Ninguna cifra se escribe
   a mano en otro sitio, así que no puede haber dos precios para el mismo panel.
+  **Son aproximados**: están en el rango real para que el panel resulte creíble, pero no son
+  la lista oficial de precios. No cotices sobre ellos.
 - **El kit recomendado se calcula** con `recomendarKit(factura)`, no se escribe por lead.
 - La estimación de consumo usa `TARIFA_COP_POR_KWH` (700–950 COP/kWh). Si cambia la tarifa,
   se toca ahí y en ningún otro lugar.

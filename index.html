@@ -1389,7 +1389,9 @@
   var porDia = {};
   var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-  /* Ticket medio del catálogo real (40/40/20 sobre los tres kits). Es el valor por
+  /* Ticket medio del catálogo (40/40/20 sobre los tres kits). Los precios de KITS
+     y AMPLIA están en el rango real pero no son la lista oficial: sirven para que
+     las cifras del panel sean creíbles, no para cotizar. Es el valor por
      defecto de la calculadora; si el visitante pone el suyo, todo escala con él. */
   var TICKET_BASE = Math.round(KITS[1].precio * 0.4 + KITS[2].precio * 0.4 + KITS[3].precio * 0.2);
 
