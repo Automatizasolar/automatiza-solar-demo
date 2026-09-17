@@ -2455,6 +2455,7 @@
 
   function bubbleHTML(who, text, time){
     var t = esc(text).replace(/\*(.+?)\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
+    who = (who === "bot") ? "bot" : "client";
     return '<div class="bubble ' + who + '">' + t +
            '<span class="time">' + esc(time) +
            (who === "bot" ? ' <span class="tick" aria-label="Leído">✓✓</span>' : "") +
@@ -2471,8 +2472,13 @@
       row.className = "bubble-row bot";
       row.innerHTML = quoteCardHTML(currentLead || leads[0], parseInt(text, 10) || null);
     } else {
-      row.className = "bubble-row " + who;
-      row.innerHTML = bubbleHTML(who, text, time);
+      /* `who` puede venir de una transcripcion restaurada de sessionStorage, y de
+         ahi acaba dentro de un atributo class. Se reduce a los dos valores que el
+         guion produce: asi un almacenamiento manipulado no puede salirse del
+         atributo e inyectar marcado. */
+      var quien = (who === "bot") ? "bot" : "client";
+      row.className = "bubble-row " + quien;
+      row.innerHTML = bubbleHTML(quien, text, time);
     }
     chatBody.appendChild(row);
     maybeScroll(stick);
