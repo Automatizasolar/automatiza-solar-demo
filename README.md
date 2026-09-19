@@ -15,19 +15,17 @@ personas que escribieron de noche y en qué quedó cada una.
   No se auto-abre por debajo de 75rem: ahí el cajón taparía el panel entero. Y si lo cierras,
   no vuelve solo, ni siquiera tras un F5; «Reiniciar demo» lo devuelve a la primera visita.
 
-- **Las conversaciones son una lista, no tarjetas.** Cada persona es una fila con estado,
-  nombre, qué pide y cuánto vale, alineados por columna para poder barrerlas y compararlas.
-  **Tocar la fila despliega el detalle completo dentro de ella** — sistema instalado, gasto
-  informado, componentes, hora — y tocar otra vez lo cierra.
-- **El botón de la derecha abre la conversación**: dice *Recuperar* (verde) en quien se
-  enfrió y *Ver chat* en el resto. Son dos acciones distintas, así que son dos botones y no
-  uno anidado en otro. El chat entra como **cajón lateral** y, en pantalla ancha, el panel se
-  aparta en vez de quedar tapado: se ve el marcador y la conversación a la vez. Eso es lo que
-  hay que enseñar — el dolor y la solución en el mismo pantallazo. Por debajo de 48rem el
-  cajón ocupa la pantalla entera.
-- En la columna de valor, quien ya cerró muestra lo que vale y quien se enfrió muestra lo que
-  está **en juego**, en rojo. La columna nunca queda vacía, que es lo que la haría inútil de
-  barrer.
+- **Conversaciones es una bandeja de dos paneles.** A la izquierda un hilo por persona:
+  foto, nombre, hora y de qué iba — lo justo para elegir a quién leer. A la derecha, la
+  conversación. El detalle completo no está aquí a propósito: vive en Oportunidades, y
+  meterlo en los dos sitios era lo que saturaba la pantalla.
+- **El chat ya no es un cajón flotante**, es la segunda columna de la bandeja. Por debajo de
+  60rem no caben dos columnas y vuelve a comportarse como cajón a pantalla completa, que es
+  lo único usable en un móvil.
+- **Oportunidades lleva el detalle y los filtros.** Quien ya cerró muestra lo que vale y quien
+  se enfrió muestra lo que está **en juego**, en rojo. El botón de cada fila dice *Recuperar*
+  (verde) en los fríos y *Ver chat* en el resto, y salta a Conversaciones con ese hilo
+  abierto.
 - **Andrés Zapata** está marcado como "Solo curiosidad": su conversación es interactiva y
   termina recuperándolo. Al confirmar, **los indicadores de arriba se mueven de verdad**:
   entra en el histórico de hoy como una venta y una visita más, y las cuatro tarjetas
@@ -85,21 +83,30 @@ no deja mensajes huérfanos de la rama anterior.
 
 ## Cómo está organizado
 
-Arriba, fijo en las tres vistas, **el marcador**: el panel de control y los cinco
-indicadores. No es una vista más — es lo que tiene que verse moverse mientras pasa
-cualquier otra cosa. Debajo, **tres pestañas** que se turnan la pantalla:
+**Cuatro apartados**, en barra lateral en escritorio y en pestañas por debajo de 64rem.
+Son el mismo control con dos formas y se mueven siempre juntos:
 
-- **Conversaciones** (la de entrada) — los doce chats de anoche. Encima, una barra roja
-  dice cuántos se enfriaron y cuánto valen; la pestaña lleva ese mismo número en rojo.
-  Cuando no queda ninguno, barra y número cambian de tono.
-- **Gráficas** — la gráfica y, en tarjeta aparte, el desglose de la pérdida.
-- **Visitas** — el calendario, con el total en la propia pestaña.
+- **Resumen** — el titular, el panel de control, los cinco indicadores completos, **el
+  embudo** y la gráfica con el desglose de la pérdida.
+- **Conversaciones** (la de entrada) — bandeja de dos paneles: la lista de hilos a la
+  izquierda y el chat a la derecha. Encima, la barra roja con cuántos se enfriaron.
+- **Oportunidades** — la misma gente en tabla, con lo que pidió, su etapa y su valor, y
+  **fichas para filtrar por etapa**.
+- **Visitas** — el calendario.
 
-Una pestaña oculta mide cero, así que la gráfica **no se dibuja hasta que se muestra**
-(`chartPendiente`): si no, saldrían trazados sin sentido sobre un ancho de cero.
+**El embudo** (`ETAPAS`) reparte a los doce por la etapa en la que están: se enfrió, sin
+cerrar, visita agendada, recuperada, comprado. Cada ficha del embudo **filtra la tabla de
+Oportunidades**, así que el resumen no es solo de lectura: es por donde se entra al detalle.
+Los estados de lead se asignan a etapas en un único sitio (`ETAPAS[].estados`), para no
+repartirlos a mano en dos lados.
 
-Se turnan la pantalla en vez de apilarse por una razón concreta: en una llamada de tres
-minutos nadie rueda la rueda buscando la sección. Se toca una pestaña y está.
+**La franja del marcador** repite las cinco cifras en una línea, pegada arriba, en todos los
+apartados **menos en Resumen** — allí ya están las tarjetas completas y repetirlas sería
+decir dos veces lo mismo. Existe por una razón concreta: el momento clave de la demo es
+recuperar a un frío y ver moverse el número, y eso tiene que pasar estés donde estés.
+
+Una pestaña oculta mide cero, así que la gráfica **no se dibuja hasta que se muestra**: si no,
+saldrían trazados sin sentido sobre un ancho de cero.
 
 Dos reglas visuales sostienen el conjunto. **Oscuro es lo que manejas tú**: el periodo, la
 calculadora y el interruptor viven juntos sobre el panel de control navy, separados de las
