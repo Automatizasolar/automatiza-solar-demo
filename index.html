@@ -977,16 +977,40 @@
   }
   .op-h,.op-f{
     display:grid;
-    grid-template-columns:minmax(9rem,1.3fr) minmax(9rem,1.5fr) 8.5rem 8rem 6rem;
+    grid-template-columns:minmax(9rem,1.3fr) minmax(9rem,1.5fr) 8.5rem 8rem 1.25rem;
     gap:.875rem;align-items:center;padding:.6875rem 1rem;
   }
   .op-h{
     background:var(--mist);border-bottom:1px solid var(--line);
     font-size:.6875rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
   }
-  .op-f{border-bottom:1px solid var(--line);}
-  .op-f:last-child{border-bottom:none;}
+  /* La fila es el contenedor; dentro van la zona que despliega, el botón de
+     acción y el detalle. El carril de la derecha queda reservado para el botón,
+     que se posiciona encima para no anidar un <button> dentro de otro. */
+  .op-fila{position:relative;border-bottom:1px solid var(--line);}
+  .op-fila:last-child{border-bottom:none;}
+  .op-f{
+    width:100%;background:none;border:none;text-align:left;color:inherit;
+    padding-right:7.5rem;transition:background .15s ease;
+  }
+  .op-h{padding-right:7.5rem;}
   .op-f:hover{background:var(--mist);}
+  .op-f[aria-expanded="true"]{background:var(--mist);}
+  .op-chev{
+    justify-self:center;color:var(--muted);font-size:.6875rem;line-height:1;
+    transition:transform .18s ease;
+  }
+  .op-f[aria-expanded="true"] .op-chev{transform:rotate(180deg);}
+  .op-det{
+    padding:0 1rem 1rem calc(1rem + 2.5625rem);
+    border-top:1px dashed var(--line);
+  }
+  .op-det[hidden]{display:none;}
+  .op-det .lead-grid{padding-top:.875rem;gap:.625rem 1.25rem;}
+  @media(min-width:60rem){
+    .op-det .lead-grid{grid-template-columns:repeat(3,1fr);}
+  }
+  .op-det .lead-foot{margin-top:.75rem;padding-top:.625rem;}
   .op-cli{display:flex;align-items:center;gap:.5625rem;min-width:0;}
   .op-cli .avatar{width:2rem;height:2rem;font-size:.6875rem;}
   /* Son <span> dentro de un <span>: hay que devolverles el flujo de bloque o el
@@ -1000,7 +1024,8 @@
   .op-v.riesgo{color:var(--red-ink);}
   .op-v small{display:block;font-size:.6875rem;font-weight:600;}
   .op-ver{
-    justify-self:end;background:var(--paper);border:1.5px solid var(--line);color:var(--navy);
+    position:absolute;right:1rem;top:.625rem;
+    background:var(--paper);border:1.5px solid var(--line);color:var(--navy);
     font-weight:700;font-size:.8125rem;padding:.375rem .75rem;border-radius:999px;
   }
   .op-ver:hover{border-color:var(--navy);}
@@ -1018,6 +1043,29 @@
   #panel-res .sec-head{margin-top:clamp(1.75rem,3.5vw,2.5rem);}
   #panel-res .embudo + .sec-head,
   #panel-res .stats + .sec-head{margin-top:clamp(2rem,4vw,3rem);}
+  /* ---- Oportunidades en pantalla estrecha ----
+     La tabla se desplaza en horizontal, y el detalle heredaba ese ancho: había que
+     arrastrarlo de lado para leerlo. Pegado a la izquierda se queda quieto mientras
+     la fila se mueve, y cabe entero en la pantalla. */
+  @media(max-width:60rem){
+    .op-det{
+      position:sticky;left:0;
+      width:min(100%,calc(100vw - 2.5rem));
+      padding-left:1rem;
+    }
+    .op-det .lead-grid{grid-template-columns:1fr;}
+  }
+
+  /* La franja en móvil ocupaba cinco líneas fijas comiéndose media pantalla. Deja
+     de ir pegada arriba y se reparte en dos columnas: sigue estando, sin estorbar. */
+  @media(max-width:60rem){
+    .tira{
+      position:static;
+      display:grid;grid-template-columns:1fr 1fr;gap:.375rem .75rem;
+    }
+    body:not(.en-resumen) .tira{display:grid;}
+    .tira-i.mal{grid-column:1/-1;}
+  }
 </style>
 </head>
 <body>
@@ -2593,6 +2641,46 @@
 
   /* ---- Oportunidades: la misma gente, con lo que pidió y lo que vale ---- */
   var filtroOp = "todas";
+  /* Filas desplegadas. La tabla se redibuja al filtrar, al abrir un chat y al
+     recuperar a alguien: sin esto el detalle que estabas leyendo se cerraba solo. */
+  var opAbiertas = {};
+
+  /* El detalle completo de una persona. Es lo mismo que enseña la ficha del chat,
+     pero en campos: quien lo abre quiere comprobar datos, no leer la conversación. */
+  function detalleHTML(l){
+    var cabecera, bloque, valorLab;
+    if(esAmplia(l)){
+      var amp = AMPLIA[l.intencion];
+      cabecera = field("Sistema instalado", KITS[l.kitInstalado].short) +
+                 field("Ubicaci\u00f3n", l.lugar);
+      bloque = '<span class="lead-field full">' +
+                 '<span class="k">Ampliaci\u00f3n que pidi\u00f3</span>' +
+                 '<span class="v">' + esc(piezaAmplia(l.intencion, l.cantidad)) + '</span>' +
+                 '<span class="kit-desc">' + esc(amp.gancho) + '</span>' +
+               '</span>';
+      valorLab = "Valor de la ampliaci\u00f3n";
+    } else {
+      cabecera = field("Paquete recomendado", KITS[kitRecomendado(l)].short) +
+                 field("Lugar instalaci\u00f3n", l.lugar);
+      bloque = l.kit
+        ? '<span class="lead-field full">' +
+            '<span class="k">Kit elegido</span>' +
+            '<span class="v">' + esc(KITS[l.kit].name) + '</span>' +
+            '<span class="kit-desc">' + esc(KITS[l.kit].partes.join(" \u00b7 ")) + '</span>' +
+          '</span>'
+        : field("Kit elegido", "A\u00fan no ha elegido", "full", "muted");
+      valorLab = "Valor del kit";
+    }
+    var pie = l.estado === "curiosidad"
+      ? '<span class="lead-foot">Escribi\u00f3 a las ' + esc(l.hora) +
+        ' y se enfri\u00f3. Nadie le contest\u00f3.</span>'
+      : '<span class="lead-foot plain">Escribi\u00f3 a las ' + esc(l.hora) +
+        ' \u00b7 respondido en ' + esc(l.respuesta) + ' s</span>';
+    return '<div class="lead-grid">' + cabecera +
+             field(esAmplia(l) ? "Situaci\u00f3n" : "Gasto mensual informado", consumoDisplay(l), "full") +
+             bloque + field(valorLab, formatCOP(valorDe(l))) +
+           '</div>' + pie;
+  }
 
   function renderOportunidades(){
     var chips = document.getElementById("filtrosOp");
@@ -2638,31 +2726,55 @@
         ? '<span class="op-v">' + esc(formatCOP(cerrado)) + '</span>'
         : '<span class="op-v riesgo">' + esc(formatCOP(valorEnJuego(l))) +
           '<small>en juego</small></span>';
-      return '<div class="op-f">' +
-        '<span class="op-cli">' +
-          '<span class="avatar" aria-hidden="true">' + esc(initials(l.name)) +
-            (l.foto ? '<img src="' + esc(l.foto) + '" alt="" width="32" height="32" loading="lazy" decoding="async">' : '') +
+      var abierta = !!opAbiertas[l.id];
+      var det = "opdet-" + l.id;
+      /* Tres piezas y no una: tocar la fila despliega, el botón abre el chat. Son
+         acciones distintas, y un <button> dentro de otro no es HTML válido. */
+      return '<div class="op-fila">' +
+        '<button type="button" class="op-f" data-abre="' + esc(l.id) + '"' +
+          ' aria-expanded="' + (abierta ? "true" : "false") + '" aria-controls="' + det + '">' +
+          '<span class="op-cli">' +
+            '<span class="avatar" aria-hidden="true">' + esc(initials(l.name)) +
+              (l.foto ? '<img src="' + esc(l.foto) + '" alt="" width="32" height="32" loading="lazy" decoding="async">' : '') +
+            '</span>' +
+            '<span style="min-width:0">' +
+              '<span class="op-n">' + esc(l.name) + '</span>' +
+              (l.business ? '<span class="op-b">' + esc(l.business) + '</span>' : '') +
+            '</span>' +
           '</span>' +
-          '<span style="min-width:0">' +
-            '<span class="op-n">' + esc(l.name) + '</span>' +
-            (l.business ? '<span class="op-b">' + esc(l.business) + '</span>' : '') +
-          '</span>' +
-        '</span>' +
-        '<span class="op-q">' + esc(pide.v) + '<em>' + esc(pide.k) + '</em></span>' +
-        '<span><span class="badge ' + st.cls + '">' + esc(st.label) + '</span></span>' +
-        valor +
+          '<span class="op-q">' + esc(pide.v) + '<em>' + esc(pide.k) + '</em></span>' +
+          '<span><span class="badge ' + st.cls + '">' + esc(st.label) + '</span></span>' +
+          valor +
+          '<span class="op-chev" aria-hidden="true">\u25be</span>' +
+        '</button>' +
         '<button type="button" class="op-ver' + (frio ? ' hot' : '') + '" data-ver="' + esc(l.id) + '">' +
           (frio ? "Recuperar" : "Ver chat") +
         '</button>' +
+        '<div class="op-det" id="' + det + '"' + (abierta ? "" : " hidden") + '>' +
+          detalleHTML(l) +
+        '</div>' +
       '</div>';
     }).join("");
 
+    Array.prototype.forEach.call(tabla.querySelectorAll(".op-f"), function(b){
+      b.addEventListener("click", function(){ alternaOp(b.getAttribute("data-abre")); });
+    });
     Array.prototype.forEach.call(tabla.querySelectorAll(".op-ver"), function(b){
       b.addEventListener("click", function(){
         mostrarTab("conv");
         openChat(b.getAttribute("data-ver"));
       });
     });
+  }
+
+  function alternaOp(id){
+    var det = document.getElementById("opdet-" + id);
+    var btn = document.querySelector('.op-f[data-abre="' + id + '"]');
+    if(!det || !btn) return;
+    var abrir = !opAbiertas[id];
+    if(abrir) opAbiertas[id] = true; else delete opAbiertas[id];
+    btn.setAttribute("aria-expanded", abrir ? "true" : "false");
+    det.hidden = !abrir;
   }
 
   function renderAll(){
@@ -3365,6 +3477,7 @@
     if(enCurso && !window.confirm("Hay una conversación a medias. ¿Reiniciar el demo de todas formas?")) return;
     leads = initialLeads();
     transcripts = {};
+    opAbiertas = {};        /* y se cierran los detalles desplegados */
     lastStats = {};
     clearStore();
     /* El histórico lleva dentro los leads recuperados en vivo: se regenera entero.

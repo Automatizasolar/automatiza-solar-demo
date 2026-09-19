@@ -23,9 +23,21 @@ personas que escribieron de noche y en qué quedó cada una.
   60rem no caben dos columnas y vuelve a comportarse como cajón a pantalla completa, que es
   lo único usable en un móvil.
 - **Oportunidades lleva el detalle y los filtros.** Quien ya cerró muestra lo que vale y quien
-  se enfrió muestra lo que está **en juego**, en rojo. El botón de cada fila dice *Recuperar*
-  (verde) en los fríos y *Ver chat* en el resto, y salta a Conversaciones con ese hilo
-  abierto.
+  se enfrió muestra lo que está **en juego**, en rojo.
+- **Tocar una fila despliega la ficha completa** dentro de ella: sistema instalado o paquete
+  recomendado, ubicación, gasto informado, lo que eligió con sus componentes, el valor y la
+  hora a la que escribió. Sólo aparece al tocarla — de un vistazo la tabla se barre, y el
+  detalle se pide cuando hace falta.
+- **El botón de la derecha es otra cosa**: dice *Recuperar* (verde) en los fríos y *Ver chat*
+  en el resto, y salta a Conversaciones con ese hilo abierto. Son dos acciones distintas, así
+  que son dos botones y no uno anidado en otro; el de acción va posicionado sobre el carril
+  que la fila le reserva.
+- Qué filas están desplegadas sobrevive a filtrar, a cambiar de apartado y a recuperar a
+  alguien — el detalle que estabas leyendo no se cierra solo, y sus cifras se actualizan.
+  «Reiniciar demo» los cierra todos.
+- En pantalla estrecha la tabla se desplaza en horizontal, pero **el detalle se queda pegado a
+  la izquierda** (`position:sticky`): sin eso heredaba el ancho de la tabla y había que
+  arrastrarlo de lado para leerlo.
 - **Andrés Zapata** está marcado como "Solo curiosidad": su conversación es interactiva y
   termina recuperándolo. Al confirmar, **los indicadores de arriba se mueven de verdad**:
   entra en el histórico de hoy como una venta y una visita más, y las cuatro tarjetas
