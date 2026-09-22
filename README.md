@@ -1,4 +1,4 @@
-# Automatiza Solar — Panel de leads (demo)
+# Automatiza Solar — Panel de clientes (demo)
 
 Demo interactiva de un solo archivo (`index.html`, sin build ni dependencias) para enseñar en
 llamadas de venta: el panel que vería un instalador solar a la mañana siguiente, con las
@@ -147,6 +147,10 @@ La tarjeta **"Ventas recuperadas"** cuenta ventas, no personas: son las que no h
 entrado sin contestar a tiempo. Se llamaba "Leads recuperados", que invitaba a dividirla entre
 el total de gente que escribió y leía como una cifra floja — cuando cada una vale entre
 $8.900.000 y $21.800.000.
+
+**En lo que ve el visitante no se dice "lead" en ningún sitio**: se dice *cliente*, que es
+como habla el dueño de un negocio solar. En el código los identificadores siguen siendo
+`leads`, `leadRowHTML` y demás — renombrarlos no le cambia nada a nadie y sí rompería cosas.
 
 **El interruptor «Apagar el agente»** recalcula el panel entero con el escenario contrario:
 respuesta a 11 horas, cero recuperados y la facturación desplomada. Es la pieza que hace ver el
